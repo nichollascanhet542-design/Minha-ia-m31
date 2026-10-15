@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Core AI - Minha IA M31</title>
+  <style>
+    :root {
+      --bg-main: #0e1117;
+      --bg-panel: #161b22;
+      --bg-card: #21262d;
+      --text-primary: #f0f6fc;
+      --text-muted: #8b949e;
+      --accent: #4c8dff;
+      --accent-glow: rgba(76, 141, 255, 0.35);
+      --success: #2ea043;
+      --danger: #f85149;
+      --warning: #d29922;
+      --border: #30363d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Cabeçalho */
+    header {
+      background-color: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    /* Navegação por Abas */
+    nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background-color: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 12px 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    nav button.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background-color: rgba(76, 141, 255, 0.08);
+    }
+
+    /* Área Principal */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tab-section {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .tab-section.active {
+      display: flex;
+    }
+
+    /* Chat Estilo Gemini */
+    #chat-box {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 8px;
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      word-wrap: break-word;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background-color: var(--accent);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg.ai {
+      align-self: flex-start;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Modal de Permissão Obrigatória */
+    .permission-card {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--warning);
+      border-radius: 12px;
+      padding: 12px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .permission-card.active {
+      display: flex;
+    }
+
+    .perm-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      flex: 1;
+    }
+
+    .btn-primary { background-color: var(--accent); color: #fff; }
+    .btn-success { background-color: var(--success); color: #fff; }
+    .btn-danger { background-color: var(--danger); color: #fff; }
+    .btn-card { background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
+
+    /* Barra de Entrada e Voz */
+    .chat-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background-color: var(--bg-panel);
+      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .chat-controls input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .mic-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .mic-btn.listening {
+      background-color: var(--danger);
+      box-shadow: 0 0 12px var(--danger);
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    /* Cards das Abas (Anime, Compilador, Memória SD) */
+    .panel-card {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    textarea, select, input[type="text"] {
+      width: 100%;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    #anime-screen {
+      width: 100%;
+      height: 210px;
+      background-color: #000;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #anime-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #anime-subtitle {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.75);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    #preview-frame {
+      width: 100%;
+      height: 220px;
+      background-color: #fff;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="status-dot"></div>
+      <span>Core AI • M31</span>
+    </div>
+    <button class="btn btn-card" style="flex:0; padding:6px 10px; font-size:0.8rem;" onclick="toggleVoiceOutput()" id="voice-toggle">
+      🔊 Voz: ON
+    </button>
+  </header>
+
+  <nav>
+    <button class="active" onclick="openTab('chat', this)">💬 Chat IA</button>
+    <button onclick="openTab('anime', this)">🎬 Anime</button>
+    <button onclick="openTab('compiler', this)">⚙️ Código</button>
+    <button onclick="openTab('memory', this)">💾 Memória SD</button>
+  </nav>
+
+  <main>
+    <!-- ABA 1: CHAT E VOZ -->
+    <section id="tab-chat" class="tab-section active">
+      <div id="chat-box">
+        <div class="msg ai">
+          Olá! Sou a <strong>Core AI</strong> do seu Galaxy M31. Posso conversar por voz, criar episódios de anime, compilar projetos e salvar memórias no cartão SD. Nenhuma ação crítica será executada sem a sua permissão. Como posso ajudar?
+        </div>
+      </div>
+
+      <!-- Confirmação de Permissão Obrigatória -->
+      <div id="perm-box" class="permission-card">
+        <strong style="color: var(--warning);">⚠️ Solicitação de Permissão da IA</strong>
+        <p id="perm-desc" style="font-size: 0.88rem; color: var(--text-muted);">A IA solicita autorização para executar esta tarefa.</p>
+        <div class="perm-actions">
+          <button class="btn btn-success" onclick="resolvePermission(true)">✅ Sim, Autorizar</button>
+          <button class="btn btn-danger" onclick="resolvePermission(false)">❌ Não, Cancelar</button>
+        </div>
+      </div>
+
+      <div class="chat-controls">
+        <button class="mic-btn" id="mic-btn" onclick="toggleMic()" title="Falar com a IA">🎤</button>
+        <input type="text" id="user-input" placeholder="Digite ou fale com sua IA..." onkeypress="if(event.key==='Enter') sendMessage()" />
+        <button class="btn btn-primary" style="flex:0; padding:10px 16px;" onclick="sendMessage()">Enviar</button>
+      </div>
+    </section>
+
+    <!-- ABA 2: ESTÚDIO DE ANIME -->
+    <section id="tab-anime" class="tab-section">
+      <div class="panel-card">
+        <h3>🎬 Gerador de Episódios de Anime</h3>
+        <input type="text" id="anime-prompt" placeholder="Tema do episódio (ex: Guerreiro Isekai despertando magia)..." />
+        <button class="btn btn-primary" onclick="requestPermission('Renderizar episódio de anime', startAnimeEpisode)">
+          Gerar Cenas do Episódio
+        </button>
+        <div id="anime-screen">
+          <img id="anime-img" src="" alt="Cena do Anime" style="display:none;" />
+          <div id="anime-subtitle">Aguardando roteiro do episódio...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABA 3: COMPILADOR DE PROJETOS -->
+    <section id="tab-compiler" class="tab-section">
+      <div class="panel-card">
+        <h3>⚙️ Compilador Rápido HTML/JS</h3>
+        <textarea id="code-editor" rows="6" placeholder="Cole ou gere o código do projeto aqui..."><h2>Projeto Teste M31</h2><button onclick="alert('Funcionando!')">Testar</button></textarea>
+        <button class="btn btn-success" onclick="requestPermission('Compilar e executar o código no painel', runCompiler)">
+          ▶️ Compilar e Testar
+        </button>
+        <iframe id="preview-frame"></iframe>
+      </div>
+    </section>
+
+    <!-- ABA 4: GERENCIADOR DE MEMÓRIA SD -->
+    <section id="tab-memory" class="tab-section">
+      <div class="panel-card">
+        <h3>💾 Memória Evolutiva (Cartão SD)</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted);">
+          Guarde o aprendizado da IA na memória interna ou exporte/importe arquivos para o cartão SD do Galaxy M31.
+        </p>
+        <textarea id="memory-notes" rows="4" placeholder="Ensine fatos ou instruções permanentes para sua IA..."></textarea>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" onclick="requestPermission('Salvar novas informações na memória evolutiva', saveMemory)">
+            Salvar Memória
+          </button>
+          <button class="btn btn-card" onclick="exportMemorySD()">📤 Exportar p/ SD</button>
+        </div>
+        <label class="btn btn-card" style="text-align:center; display:block;">
+          📥 Importar Arquivo do Cartão SD
+          <input type="file" accept=".json,.txt" style="display:none;" onchange="importMemorySD(event)" />
+        </label>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let voiceEnabled = true;
+    let pendingAction = null;
+    let aiMemory = localStorage.getItem('core_ai_m31_memory') || '';
+    document.getElementById('memory-notes').value = aiMemory;
+
+    // Alternar Abas
+    function openTab(tabName, btn) {
+      document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabName).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // Sistema de Permissão Obrigatória
+    function requestPermission(description, callback) {
+      pendingAction = callback;
+      document.getElementById('perm-desc').innerText = description;
+      document.getElementById('perm-box').classList.add('active');
+      openTab('chat', document.querySelectorAll('nav button')[0]);
+      speakText('Solicito sua permissão para ' + description);
+    }
+
+    function resolvePermission(allowed) {
+      document.getElementById('perm-box').classList.remove('active');
+      if (allowed && typeof pendingAction === 'function') {
+        appendMsg('ai', '✅ Permissão concedida. Executando tarefa...');
+        pendingAction();
+      } else {
+        appendMsg('ai', '🛑 Ação cancelada pelo usuário.');
+      }
+      pendingAction = null;
+    }
+
+    // Chat e Motor de IA
+    function appendMsg(sender, text) {
+      const box = document.getElementById('chat-box');
+      const div = document.createElement('div');
+      div.className = 'msg ' + sender;
+      div.innerHTML = text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('user-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMsg('user', text);
+      input.value = '';
+
+      try {
+        const context = aiMemory ? `Memória do usuário: ${aiMemory}. ` : '';
+        const prompt = encodeURIComponent(`${context}Responda em português de forma útil e direta: ${text}`);
+        const res = await fetch(`https://text.pollinations.ai/${prompt}`);
+        const reply = await res.text();
+        appendMsg('ai', reply);
+        speakText(reply);
+      } catch (err) {
+        const fallback = 'Estou operando no modo offline local do M31. Verifique sua conexão para consultas na nuvem.';
+        appendMsg('ai', fallback);
+        speakText(fallback);
+      }
+    }
+
+    // Síntese e Reconhecimento de Voz
+    function toggleVoiceOutput() {
+      voiceEnabled = !voiceEnabled;
+      document.getElementById('voice-toggle').innerText = voiceEnabled ? '🔊 Voz: ON' : '🔇 Voz: OFF';
+      if (!voiceEnabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+
+    function speakText(text) {
+      if (!voiceEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text.replace(/[*#_]/g, ''));
+      utter.lang = 'pt-BR';
+      window.speechSynthesis.speak(utter);
+    }
+
+    let recognition = null;
+    function toggleMic() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        alert('Reconhecimento de voz não suportado neste navegador.');
+        return;
+      }
+      const micBtn = document.getElementById('mic-btn');
+      if (!recognition) {
+        recognition = new SpeechRec();
+        recognition.lang = 'pt-BR';
+        recognition.onstart = () => micBtn.classList.add('listening');
+        recognition.onend = () => micBtn.classList.remove('listening');
+        recognition.onresult = (e) => {
+          document.getElementById('user-input').value = e.results[0][0].transcript;
+          sendMessage();
+        };
+      }
+      recognition.start();
+    }
+
+    // Estúdio de Anime
+    function startAnimeEpisode() {
+      const theme = document.getElementById('anime-prompt').value.trim() || 'Guerreiro místico em mundo de fantasia';
+      const img = document.getElementById('anime-img');
+      const sub = document.getElementById('anime-subtitle');
+      sub.innerText = 'Renderizando cena: ' + theme + '...';
+      img.style.display = 'block';
+      img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent('anime style scene, high quality, ' + theme)}?width=640&height=360&nologo=true`;
+      img.onload = () => {
+        sub.innerText = '🎬 Cena 1: ' + theme;
+        speakText('Cena do anime renderizada com sucesso.');
+      };
+    }
+
+    // Compilador de Código
+    function runCompiler() {
+      const code = document.getElementById('code-editor').value;
+      const frame = document.getElementById('preview-frame');
+      frame.srcdoc = code;
+    }
+
+    // Memória Evolutiva e Cartão SD
+    function saveMemory() {
+      aiMemory = document.getElementById('memory-notes').value;
+      localStorage.setItem('core_ai_m31_memory', aiMemory);
+      appendMsg('ai', '💾 Memória evolutiva atualizada com sucesso!');
+    }
+
+    function exportMemorySD() {
+      const data = JSON.stringify({ memory: aiMemory, date: new Date().toISOString() }, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'memoria_core_ai_m31.json';
+      a.click();
+    }
+
+    function importMemorySD(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          aiMemory = parsed.memory || e.target.result;
+        } catch {
+          aiMemory = e.target.result;
+        }
+        document.getElementById('memory-notes').value = aiMemory;
+        localStorage.setItem('core_ai_m31_memory', aiMemory);
+        appendMsg('ai', '📥 Memória do cartão SD carregada com sucesso!');
+      };
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html>
