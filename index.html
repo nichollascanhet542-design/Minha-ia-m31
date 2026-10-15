@@ -35,7 +35,6 @@
       overflow: hidden;
     }
 
-    /* Cabeçalho */
     header {
       background-color: var(--bg-panel);
       border-bottom: 1px solid var(--border);
@@ -62,7 +61,6 @@
       box-shadow: 0 0 8px var(--success);
     }
 
-    /* Navegação por Abas */
     nav {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -88,7 +86,31 @@
       background-color: rgba(76, 141, 255, 0.08);
     }
 
-    /* Área Principal */
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background-color: var(--bg-panel);
+      padding: 6px 10px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .quick-links button {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      padding: 8px 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .quick-links button:active {
+      background-color: var(--accent);
+      color: #fff;
+    }
+
     main {
       flex: 1;
       overflow-y: auto;
@@ -109,7 +131,6 @@
       display: flex;
     }
 
-    /* Chat Estilo Gemini */
     #chat-box {
       flex: 1;
       overflow-y: auto;
@@ -120,7 +141,7 @@
     }
 
     .msg {
-      max-width: 85%;
+      max-width: 88%;
       padding: 12px 14px;
       border-radius: 16px;
       font-size: 0.95rem;
@@ -142,7 +163,6 @@
       border-bottom-left-radius: 4px;
     }
 
-    /* Modal de Permissão Obrigatória */
     .permission-card {
       background-color: var(--bg-panel);
       border: 1px solid var(--warning);
@@ -168,7 +188,7 @@
       border: none;
       font-weight: 600;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       flex: 1;
     }
 
@@ -177,7 +197,6 @@
     .btn-danger { background-color: var(--danger); color: #fff; }
     .btn-card { background-color: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
 
-    /* Barra de Entrada e Voz */
     .chat-controls {
       display: flex;
       gap: 8px;
@@ -206,22 +225,13 @@
       color: var(--text-primary);
       font-size: 1.1rem;
       cursor: pointer;
-      transition: 0.2s;
     }
 
     .mic-btn.listening {
       background-color: var(--danger);
       box-shadow: 0 0 12px var(--danger);
-      animation: pulse 1.2s infinite;
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-      100% { transform: scale(1); }
-    }
-
-    /* Cards das Abas (Anime, Compilador, Memória SD) */
     .panel-card {
       background-color: var(--bg-panel);
       border: 1px solid var(--border);
@@ -276,8 +286,8 @@
 
     #preview-frame {
       width: 100%;
-      height: 220px;
-      background-color: #fff;
+      height: 300px;
+      background-color: #000;
       border-radius: 8px;
       border: 1px solid var(--border);
     }
@@ -298,44 +308,27 @@
   <nav>
     <button class="active" onclick="openTab('chat', this)">💬 Chat IA</button>
     <button onclick="openTab('anime', this)">🎬 Anime</button>
-    <button onclick="openTab('compiler', this)">⚙️ Código</button>
+    <button onclick="openTab('compiler', this)">🎮 Jogos/Código</button>
     <button onclick="openTab('memory', this)">💾 Memória SD</button>
-    <button onclick="abrirNavegador()">Pesquisar no YouTube</button>
-    <button onclick="abrirGoogle()">Pesquisar no Google</button>
-<button onclick="abrirJogos()">Criar Jogos</button>
-
-<script type="module">
-  import { Browser } from 'https://cdn.jsdelivr.net/npm/@capacitor/browser@6.0.0/dist/esm/index.js';
-
-  window.abrirGoogle = async () => {
-    await Browser.open({ url: 'https://www.google.com' });
-  };
-  window.abrirJogos = async () => {
-    await Browser.open({ url: 'https://www.google.com/search?q=como+criar+jogos+em+JavaScript' });
-  };
-</script>
-
-
-<script type="module">
-  import { Browser } from 'https://cdn.jsdelivr.net/npm/@capacitor/browser@6.0.0/dist/esm/index.js';
-
-  window.abrirNavegador = async () => {
-    await Browser.open({ url: 'https://www.youtube.com' });
-  };
-</script>
-
   </nav>
+
+  <div class="quick-links">
+    <button onclick="abrirNavegador()">▶️ Pesquisar YouTube</button>
+    <button onclick="abrirGoogle()">🔍 Pesquisar Google</button>
+    <button onclick="abrirJogos()">⚔️ Criar Jogos</button>
+  </div>
 
   <main>
     <!-- ABA 1: CHAT E VOZ -->
     <section id="tab-chat" class="tab-section active">
       <div id="chat-box">
         <div class="msg ai">
-          Olá! Sou a <strong>Core AI</strong> do seu Galaxy M31. Posso conversar por voz, criar episódios de anime, compilar projetos e salvar memórias no cartão SD. Nenhuma ação crítica será executada sem a sua permissão. Como posso ajudar?
+          Olá! Sou a <strong>Core AI</strong> do seu Galaxy M31.<br><br>
+          • <strong>Pesquisas:</strong> Pergunte qualquer coisa (ou clima/notícias) que eu pesquiso e respondo, ou peça <em>"pesquisar no Google/YouTube sobre..."</em>.<br>
+          • <strong>Criar Jogos:</strong> Peça <em>"crie um jogo estilo Age of Empires"</em> (ou qualquer outro) que eu programo e rodo para você na hora!
         </div>
       </div>
 
-      <!-- Confirmação de Permissão Obrigatória -->
       <div id="perm-box" class="permission-card">
         <strong style="color: var(--warning);">⚠️ Solicitação de Permissão da IA</strong>
         <p id="perm-desc" style="font-size: 0.88rem; color: var(--text-muted);">A IA solicita autorização para executar esta tarefa.</p>
@@ -347,7 +340,7 @@
 
       <div class="chat-controls">
         <button class="mic-btn" id="mic-btn" onclick="toggleMic()" title="Falar com a IA">🎤</button>
-        <input type="text" id="user-input" placeholder="Digite ou fale com sua IA..." onkeypress="if(event.key==='Enter') sendMessage()" />
+        <input type="text" id="user-input" placeholder="Pergunte, pesquise ou peça um jogo..." onkeypress="if(event.key==='Enter') sendMessage()" />
         <button class="btn btn-primary" style="flex:0; padding:10px 16px;" onclick="sendMessage()">Enviar</button>
       </div>
     </section>
@@ -367,15 +360,24 @@
       </div>
     </section>
 
-    <!-- ABA 3: COMPILADOR DE PROJETOS -->
+    <!-- ABA 3: CRIADOR DE JOGOS E COMPILADOR -->
     <section id="tab-compiler" class="tab-section">
       <div class="panel-card">
-        <h3>⚙️ Compilador Rápido HTML/JS</h3>
-        <textarea id="code-editor" rows="6" placeholder="Cole ou gere o código do projeto aqui..."><h2>Projeto Teste M31</h2><button onclick="alert('Funcionando!')">Testar</button></textarea>
-        <button class="btn btn-success" onclick="requestPermission('Compilar e executar o código no painel', runCompiler)">
-          ▶️ Compilar e Testar
-        </button>
-        <iframe id="preview-frame"></iframe>
+        <h3>🎮 Estúdio de Jogos & Compilador IA</h3>
+        <input type="text" id="game-prompt" placeholder="Descreva o jogo (ex: Estilo Age of Empires com recursos, tropas e batalhas)..." />
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="gerarJogoPorIA()">🤖 Criar Jogo com IA</button>
+          <button class="btn btn-card" onclick="carregarAgeOfEmpiresRTS()">⚔️ Carregar Estilo Age of Empires</button>
+        </div>
+        <iframe id="preview-frame" allowfullscreen></iframe>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-success" onclick="runCompiler()">▶️ Rodar Código</button>
+          <button class="btn btn-card" onclick="abrirJogoTelaCheia()">⛶ Jogar em Tela Cheia</button>
+        </div>
+        <details>
+          <summary style="cursor:pointer; font-size:0.85rem; color:var(--text-muted); padding:4px 0;">Ver/Editar Código-Fonte do Jogo</summary>
+          <textarea id="code-editor" rows="6" style="margin-top:6px;"></textarea>
+        </details>
       </div>
     </section>
 
@@ -383,9 +385,6 @@
     <section id="tab-memory" class="tab-section">
       <div class="panel-card">
         <h3>💾 Memória Evolutiva (Cartão SD)</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted);">
-          Guarde o aprendizado da IA na memória interna ou exporte/importe arquivos para o cartão SD do Galaxy M31.
-        </p>
         <textarea id="memory-notes" rows="4" placeholder="Ensine fatos ou instruções permanentes para sua IA..."></textarea>
         <div style="display:flex; gap:8px;">
           <button class="btn btn-primary" onclick="requestPermission('Salvar novas informações na memória evolutiva', saveMemory)">
@@ -404,48 +403,113 @@
   <script>
     let voiceEnabled = true;
     let pendingAction = null;
+    let currentAudio = null;
     let aiMemory = localStorage.getItem('core_ai_m31_memory') || '';
     document.getElementById('memory-notes').value = aiMemory;
 
-    // Alternar Abas
-    function openTab(tabName, btn) {
+    // Abertura segura de links externos no Android
+    window.abrirLinkExterno = function(url) {
+      const win = window.open(url, '_blank');
+      if (!win) window.location.href = url;
+    };
+
+    // Botão Pesquisar no YouTube
+    window.abrirNavegador = function(termoDireto) {
+      const inputVal = termoDireto || document.getElementById('user-input').value.trim();
+      const query = inputVal || prompt('O que você quer pesquisar no YouTube?');
+      if (query) {
+        window.abrirLinkExterno('https://m.youtube.com/results?search_query=' + encodeURIComponent(query));
+      } else {
+        window.abrirLinkExterno('https://m.youtube.com');
+      }
+    };
+
+    // Botão Pesquisar no Google
+    window.abrirGoogle = function(termoDireto) {
+      const inputVal = termoDireto || document.getElementById('user-input').value.trim();
+      const query = inputVal || prompt('O que você quer pesquisar no Google?');
+      if (query) {
+        window.abrirLinkExterno('https://www.google.com/search?q=' + encodeURIComponent(query));
+      } else {
+        window.abrirLinkExterno('https://www.google.com');
+      }
+    };
+
+    // Botão Criar Jogos
+    window.abrirJogos = function() {
+      openTab('compiler', document.querySelectorAll('nav button')[2]);
+      if (!document.getElementById('code-editor').value.trim()) {
+        carregarAgeOfEmpiresRTS();
+      }
+    };
+
+    window.openTab = function(tabName, btn) {
       document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabName).classList.add('active');
-      btn.classList.add('active');
-    }
+      if (btn) btn.classList.add('active');
+    };
 
-    // Sistema de Permissão Obrigatória
-    function requestPermission(description, callback) {
+    window.requestPermission = function(description, callback) {
       pendingAction = callback;
       document.getElementById('perm-desc').innerText = description;
       document.getElementById('perm-box').classList.add('active');
       openTab('chat', document.querySelectorAll('nav button')[0]);
       speakText('Solicito sua permissão para ' + description);
-    }
+    };
 
-    function resolvePermission(allowed) {
+    window.resolvePermission = function(allowed) {
       document.getElementById('perm-box').classList.remove('active');
       if (allowed && typeof pendingAction === 'function') {
-        appendMsg('ai', '✅ Permissão concedida. Executando tarefa...');
+        appendMsg('ai', '✅ Permissão concedida. Executando...');
         pendingAction();
       } else {
         appendMsg('ai', '🛑 Ação cancelada pelo usuário.');
       }
       pendingAction = null;
-    }
+    };
 
-    // Chat e Motor de IA
-    function appendMsg(sender, text) {
+    function appendMsg(sender, htmlText) {
       const box = document.getElementById('chat-box');
       const div = document.createElement('div');
       div.className = 'msg ' + sender;
-      div.innerHTML = text;
+      div.innerHTML = htmlText;
       box.appendChild(div);
       box.scrollTop = box.scrollHeight;
     }
 
-    async function sendMessage() {
+    // Busca em Tempo Real: Clima + Wikipédia em Português
+    async function pesquisarNaWeb(pergunta) {
+      let resultados = '';
+
+      // 1. Clima em tempo real se falar de tempo/chuva
+      if (/tempo|clima|chov|chuva|temperatura|graus/i.test(pergunta)) {
+        try {
+          const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=-23.5505&longitude=-46.6333&current=temperature_2m,precipitation_probability&daily=precipitation_probability_max,temperature_2m_max,temperature_2m_min&timezone=America%2FSao_Paulo');
+          const d = await r.json();
+          resultados += `[Clima Tempo Real SP: Agora ${d.current.temperature_2m}°C, chance de chuva agora ${d.current.precipitation_probability || 0}%, máxima de chuva hoje ${d.daily.precipitation_probability_max[0]}%, temp máx ${d.daily.temperature_2m_max[0]}°C / mín ${d.daily.temperature_2m_min[0]}°C]. `;
+        } catch (e) {}
+      }
+
+      // 2. Pesquisa na Wikipédia em tempo real para fatos e assuntos gerais
+      try {
+        const termoLimpo = pergunta.replace(/pesquise|pesquisar|no google|sobre|o que é|quem é|quem foi|me fale/gi, '').trim();
+        if (termoLimpo.length > 2) {
+          const wUrl = `https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(termoLimpo)}&utf8=&format=json&origin=*&srlimit=2`;
+          const wRes = await fetch(wUrl);
+          const wData = await wRes.json();
+          if (wData.query && wData.query.search && wData.query.search.length > 0) {
+            const trechos = wData.query.search.map(i => i.title + ': ' + i.snippet.replace(/<[^>]*>/g, '')).join(' | ');
+            resultados += `[Resultados da Pesquisa Web: ${trechos}]. `;
+          }
+        }
+      } catch (e) {}
+
+      return resultados;
+    }
+
+    // Enviar Mensagem no Chat (Entende comandos de Pesquisa e Criação de Jogos)
+    window.sendMessage = async function() {
       const input = document.getElementById('user-input');
       const text = input.value.trim();
       if (!text) return;
@@ -453,40 +517,403 @@
       appendMsg('user', text);
       input.value = '';
 
+      const lower = text.toLowerCase();
+
+      // Se pedir para abrir/pesquisar direto no YouTube
+      if (lower.includes('no youtube') || lower.startsWith('youtube ')) {
+        const query = text.replace(/pesquise|pesquisar|abrir|abra|no youtube|youtube|sobre/gi, '').trim() || text;
+        appendMsg('ai', `▶️ Abrindo pesquisa no YouTube para: <strong>${query}</strong>`);
+        speakText('Abrindo o YouTube com sua pesquisa.');
+        setTimeout(() => window.abrirNavegador(query), 600);
+        return;
+      }
+
+      // Se pedir para criar um jogo direto pelo Chat
+      if (/(crie|criar|faça|fazer|gere|gerar|montar)\s+(um\s+)?jogo/i.test(lower) || lower.includes('age of empires')) {
+        appendMsg('ai', `🎮 Entendido! Vou montar o seu jogo (<strong>${text}</strong>) agora mesmo na aba de Jogos...`);
+        speakText('Preparando o seu jogo agora mesmo.');
+        document.getElementById('game-prompt').value = text;
+        openTab('compiler', document.querySelectorAll('nav button')[2]);
+        if (lower.includes('age of empires') || lower.includes('império') || lower.includes('estrategia') || lower.includes('estratégia')) {
+          carregarAgeOfEmpiresRTS();
+        } else {
+          gerarJogoPorIA();
+        }
+        return;
+      }
+
+      appendMsg('ai', '🔍 <em>Pesquisando informações e processando resposta...</em>');
+
       try {
+        const dadosWeb = await pesquisarNaWeb(text);
         const context = aiMemory ? `Memória do usuário: ${aiMemory}. ` : '';
-        const prompt = encodeURIComponent(`${context}Responda em português de forma útil e direta: ${text}`);
-        const res = await fetch(`https://text.pollinations.ai/${prompt}`);
+        const prompt = encodeURIComponent(`${context}${dadosWeb}Com base nos dados acima e no seu conhecimento, responda em português de forma completa, clara e direta à solicitação do usuário: ${text}`);
+        const res = await fetch(`https://text.pollinations.ai/${prompt}?model=openai`);
         const reply = await res.text();
-        appendMsg('ai', reply);
+
+        const botoesBusca = `<div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+          <button onclick="abrirGoogle('${text.replace(/'/g, '')}')" style="padding:5px 10px; font-size:0.75rem; border-radius:6px; border:1px solid #4c8dff; background:#161b22; color:#4c8dff; cursor:pointer;">🔍 Ver no Google</button>
+          <button onclick="abrirNavegador('${text.replace(/'/g, '')}')" style="padding:5px 10px; font-size:0.75rem; border-radius:6px; border:1px solid #f85149; background:#161b22; color:#f85149; cursor:pointer;">▶️ Ver no YouTube</button>
+        </div>`;
+
+        appendMsg('ai', reply.replace(/\n/g, '<br>') + botoesBusca);
         speakText(reply);
       } catch (err) {
-        const fallback = 'Estou operando no modo offline local do M31. Verifique sua conexão para consultas na nuvem.';
+        const fallback = 'Não consegui acessar a nuvem agora, mas você pode tocar no botão abaixo para abrir a busca direta no Google.';
         appendMsg('ai', fallback);
         speakText(fallback);
       }
+    };
+
+    // Motor Gerador de Jogos Customizados por IA
+    window.gerarJogoPorIA = async function() {
+      const desc = document.getElementById('game-prompt').value.trim();
+      if (!desc) {
+        alert('Digite como você quer o jogo! Ex: Jogo estilo Age of Empires, ou jogo de nave espacial, corrida, etc.');
+        return;
+      }
+
+      if (/age of empires|império|imperio|rts|aldeões|aldeoes/i.test(desc)) {
+        carregarAgeOfEmpiresRTS();
+        return;
+      }
+
+      speakText('Programando o seu jogo personalizado. Aguarde alguns segundos.');
+      const editor = document.getElementById('code-editor');
+      editor.value = '<!-- Gerando código do jogo com IA... Aguarde... -->';
+
+      const sysPrompt = `Crie um jogo 2D completo, jogável no celular (com botões touch na tela e clique/toque no canvas), em um único arquivo HTML5 com <canvas> e JavaScript puro, com física, colisão, pontuação, inimigos e visual bonito sobre: ${desc}. Retorne APENAS o código HTML puro começando com <!DOCTYPE html> sem explicações e sem blocos markdown.`;
+
+      try {
+        const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(sysPrompt)}?model=openai`);
+        let code = await res.text();
+        code = code.replace(/```html/gi, '').replace(/```/g, '').trim();
+        editor.value = code;
+        runCompiler();
+        speakText('Jogo criado com sucesso! Já está rodando na tela.');
+      } catch (e) {
+        speakText('Erro ao conectar na nuvem. Carregando motor de estratégia local.');
+        carregarAgeOfEmpiresRTS();
+      }
+    };
+
+    // Motor RTS Estilo Age of Empires (Física, Coleta de Recursos, Construção e Batalha)
+    window.carregarAgeOfEmpiresRTS = function() {
+      const rtsCode = `<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+  body { margin:0; background:#1a2418; color:#fff; font-family:sans-serif; overflow:hidden; user-select:none; }
+  #hud { background:rgba(0,0,0,0.85); padding:6px 8px; display:flex; justify-content:space-between; align-items:center; font-size:12px; border-bottom:2px solid #d29922; }
+  .res { display:flex; gap:10px; font-weight:bold; }
+  #controls { position:fixed; bottom:0; left:0; right:0; background:rgba(0,0,0,0.88); padding:6px; display:grid; grid-template-columns:repeat(5,1fr); gap:4px; border-top:2px solid #d29922; }
+  button { background:#2b3528; color:#f0e6d2; border:1px solid #d29922; border-radius:6px; padding:6px 2px; font-size:10px; font-weight:bold; cursor:pointer; }
+  button:active { background:#d29922; color:#000; }
+  canvas { display:block; width:100vw; height:calc(100vh - 82px); }
+</style>
+</head>
+<body>
+  <div id="hud">
+    <div class="res">
+      <span>🌲 <span id="wood">150</span></span>
+      <span>🪙 <span id="gold">150</span></span>
+      <span>👥 <span id="pop">3</span></span>
+    </div>
+    <div id="status" style="color:#4c8dff; font-weight:bold;">Toque no mapa p/ mover tropas</div>
+  </div>
+  <canvas id="game"></canvas>
+  <div id="controls">
+    <button onclick="spawnVillager()">👷 Aldeão<br>(50🌲)</button>
+    <button onclick="spawnSoldier()">⚔️ Guerreiro<br>(40🌲 30🪙)</button>
+    <button onclick="spawnArcher()">🏹 Arqueiro<br>(30🌲 50🪙)</button>
+    <button onclick="buildTower()">🗼 Torre<br>(80🌲 40🪙)</button>
+    <button onclick="orderAttack()" style="background:#7a1c1c;">🔥 Atacar<br>Inimigo!</button>
+  </div>
+<script>
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight - 82;
+
+  let wood = 150, gold = 150;
+  let targetX = null, targetY = null;
+
+  const playerBase = { x: 55, y: canvas.height/2, hp: 500, maxHp: 500, team: 1, r: 24 };
+  const enemyBase  = { x: canvas.width - 55, y: canvas.height/2, hp: 500, maxHp: 500, team: 2, r: 24 };
+
+  const resources = [
+    { x: 120, y: 60, type: 'wood', amount: 500 },
+    { x: 140, y: canvas.height - 60, type: 'wood', amount: 500 },
+    { x: 110, y: canvas.height/2 - 70, type: 'gold', amount: 500 },
+    { x: 110, y: canvas.height/2 + 70, type: 'gold', amount: 500 }
+  ];
+
+  const units = [];
+  const towers = [];
+  const projectiles = [];
+
+  function addUnit(x, y, role, team) {
+    const stats = {
+      villager: { hp: 45, dmg: 3, range: 15, speed: 1.2, r: 7, color: '#63b3ed' },
+      soldier:  { hp: 110, dmg: 12, range: 18, speed: 1.35, r: 9, color: team===1 ? '#3182ce' : '#e53e3e' },
+      archer:   { hp: 65, dmg: 9, range: 95, speed: 1.25, r: 8, color: team===1 ? '#38a169' : '#dd6b20' }
+    }[role];
+    units.push({ x, y, role, team, hp: stats.hp, maxHp: stats.hp, dmg: stats.dmg, range: stats.range, speed: stats.speed, r: stats.r, color: stats.color, cd: 0, carry: 0 });
+  }
+
+  // Unidades Iniciais
+  addUnit(85, canvas.height/2 - 25, 'villager', 1);
+  addUnit(85, canvas.height/2 + 25, 'villager', 1);
+  addUnit(95, canvas.height/2, 'soldier', 1);
+
+  window.spawnVillager = () => {
+    if (wood >= 50 && playerBase.hp > 0) { wood -= 50; addUnit(playerBase.x+30, playerBase.y + (Math.random()*40-20), 'villager', 1); }
+  };
+  window.spawnSoldier = () => {
+    if (wood >= 40 && gold >= 30 && playerBase.hp > 0) { wood -= 40; gold -= 30; addUnit(playerBase.x+35, playerBase.y + (Math.random()*50-25), 'soldier', 1); }
+  };
+  window.spawnArcher = () => {
+    if (wood >= 30 && gold >= 50 && playerBase.hp > 0) { wood -= 30; gold -= 50; addUnit(playerBase.x+35, playerBase.y + (Math.random()*50-25), 'archer', 1); }
+  };
+  window.buildTower = () => {
+    if (wood >= 80 && gold >= 40 && playerBase.hp > 0) {
+      wood -= 80; gold -= 40;
+      towers.push({ x: playerBase.x + 85 + Math.random()*50, y: canvas.height/2 + (Math.random()*140 - 70), cd: 0 });
+    }
+  };
+  window.orderAttack = () => {
+    targetX = enemyBase.x; targetY = enemyBase.y;
+    document.getElementById('status').innerText = '⚔️ Exército marchando para a Base Inimiga!';
+  };
+
+  canvas.addEventListener('pointerdown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    targetX = e.clientX - rect.left;
+    targetY = e.clientY - rect.top;
+    document.getElementById('status').innerText = '📍 Tropas movendo para o ponto marcado';
+  });
+
+  // Gerador de Tropas Inimigas
+  setInterval(() => {
+    if (enemyBase.hp <= 0) return;
+    addUnit(enemyBase.x - 30, enemyBase.y + (Math.random()*60-30), Math.random()>0.4 ? 'soldier' : 'archer', 2);
+  }, 5500);
+
+  function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+  function update() {
+    document.getElementById('wood').innerText = Math.floor(wood);
+    document.getElementById('gold').innerText = Math.floor(gold);
+    document.getElementById('pop').innerText = units.filter(u => u.team === 1).length;
+
+    // Torres de Defesa
+    towers.forEach(t => {
+      if (t.cd > 0) t.cd--;
+      const enemy = units.find(u => u.team === 2 && dist(t, u) < 130);
+      if (enemy && t.cd <= 0) {
+        projectiles.push({ x: t.x, y: t.y, tx: enemy.x, ty: enemy.y, target: enemy, dmg: 14, color: '#f6e05e' });
+        t.cd = 40;
+      }
+    });
+
+    // Lógica e Física das Unidades
+    for (let i = units.length - 1; i >= 0; i--) {
+      const u = units[i];
+      if (u.hp <= 0) { units.splice(i, 1); continue; }
+      if (u.cd > 0) u.cd--;
+
+      if (u.role === 'villager') {
+        // Coleta automática de Madeira e Ouro
+        const res = resources[i % resources.length];
+        if (u.carry < 15) {
+          const d = dist(u, res);
+          if (d > 14) { u.x += (res.x - u.x)/d * u.speed; u.y += (res.y - u.y)/d * u.speed; }
+          else { u.carry += 0.25; }
+        } else {
+          const d = dist(u, playerBase);
+          if (d > 26) { u.x += (playerBase.x - u.x)/d * u.speed; u.y += (playerBase.y - u.y)/d * u.speed; }
+          else {
+            if (res.type === 'wood') wood += 15; else gold += 15;
+            u.carry = 0;
+          }
+        }
+        continue;
+      }
+
+      // Buscar alvo inimigo mais próximo
+      let target = null;
+      let minDist = 9999;
+      units.forEach(other => {
+        if (other.team !== u.team) {
+          const d = dist(u, other);
+          if (d < minDist) { minDist = d; target = other; }
+        }
+      });
+
+      const enemyHQ = u.team === 1 ? enemyBase : playerBase;
+      if (enemyHQ.hp > 0 && dist(u, enemyHQ) < minDist) {
+        minDist = dist(u, enemyHQ);
+        target = enemyHQ;
+      }
+
+      if (target && minDist <= u.range + (target.r || 10)) {
+        // Atacar
+        if (u.cd <= 0) {
+          if (u.range > 30) {
+            projectiles.push({ x: u.x, y: u.y, target, dmg: u.dmg, color: u.team===1?'#63b3ed':'#fc8181' });
+          } else {
+            target.hp -= u.dmg;
+          }
+          u.cd = 38;
+        }
+      } else {
+        // Movimentar
+        let destX = target ? target.x : (u.team===1 ? (targetX || playerBase.x+70) : playerBase.x);
+        let destY = target ? target.y : (u.team===1 ? (targetY || u.y) : playerBase.y);
+        if (u.team === 1 && targetX && minDist > 130) { destX = targetX; destY = targetY; }
+        const d = Math.hypot(destX - u.x, destY - u.y);
+        if (d > 4) { u.x += (destX - u.x)/d * u.speed; u.y += (destY - u.y)/d * u.speed; }
+      }
+
+      // Física de separação entre unidades
+      units.forEach(o => {
+        if (o !== u) {
+          const d = dist(u, o);
+          if (d > 0 && d < u.r + o.r) {
+            u.x += (u.x - o.x)/d * 0.4;
+            u.y += (u.y - o.y)/d * 0.4;
+          }
+        }
+      });
     }
 
-    // Síntese e Reconhecimento de Voz
-    function toggleVoiceOutput() {
+    // Projéteis (Flechas e Disparos)
+    for (let i = projectiles.length - 1; i >= 0; i--) {
+      const p = projectiles[i];
+      if (!p.target || p.target.hp <= 0) { projectiles.splice(i, 1); continue; }
+      const d = dist(p, p.target);
+      if (d < 8) { p.target.hp -= p.dmg; projectiles.splice(i, 1); }
+      else { p.x += (p.target.x - p.x)/d * 5; p.y += (p.target.y - p.y)/d * 5; }
+    }
+  }
+
+  function drawBase(b, name, color) {
+    if (b.hp <= 0) return;
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(name + ' (' + Math.max(0, b.hp) + ')', b.x, b.y - 30);
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Desenhar Recursos
+    resources.forEach(r => {
+      ctx.fillStyle = r.type === 'wood' ? '#2f855a' : '#d69e2e';
+      ctx.beginPath(); ctx.arc(r.x, r.y, 14, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(r.type === 'wood' ? '🌲' : '🪙', r.x, r.y + 4);
+    });
+
+    // Desenhar Torres
+    towers.forEach(t => {
+      ctx.fillStyle = '#a0aec0';
+      ctx.fillRect(t.x - 10, t.y - 10, 20, 20);
+      ctx.fillText('🗼', t.x, t.y + 4);
+    });
+
+    drawBase(playerBase, '🏰 Império Azul', '#2b6cb0');
+    drawBase(enemyBase, '🏯 Império Vermelho', '#c53030');
+
+    // Desenhar Unidades e Barra de Vida
+    units.forEach(u => {
+      ctx.fillStyle = u.color;
+      ctx.beginPath(); ctx.arc(u.x, u.y, u.r, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 1; ctx.stroke();
+      // Barra de vida
+      ctx.fillStyle = '#f00'; ctx.fillRect(u.x - 8, u.y - u.r - 6, 16, 3);
+      ctx.fillStyle = '#0f0'; ctx.fillRect(u.x - 8, u.y - u.r - 6, 16 * (u.hp / u.maxHp), 3);
+    });
+
+    // Desenhar Flechas
+    projectiles.forEach(p => {
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2); ctx.fill();
+    });
+
+    if (enemyBase.hp <= 0 || playerBase.hp <= 0) {
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#f6e05e'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(enemyBase.hp <= 0 ? '🏆 VITÓRIA DO SEU IMPÉRIO!' : '💀 SUA BASE FOI DESTRUÍDA!', canvas.width/2, canvas.height/2);
+    }
+  }
+
+  function loop() { update(); render(); requestAnimationFrame(loop); }
+  loop();
+<\/script>
+</body>
+</html>`;
+      document.getElementById('code-editor').value = rtsCode;
+      runCompiler();
+      speakText('Jogo de estratégia estilo Age of Empires carregado! Seus aldeões já estão coletando madeira e ouro.');
+    };
+
+    window.abrirJogoTelaCheia = function() {
+      const frame = document.getElementById('preview-frame');
+      if (frame.requestFullscreen) frame.requestFullscreen();
+      else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+    };
+
+    // Síntese de Voz (Com suporte nativo + Fallback de Áudio para WebView Android)
+    window.toggleVoiceOutput = function() {
       voiceEnabled = !voiceEnabled;
       document.getElementById('voice-toggle').innerText = voiceEnabled ? '🔊 Voz: ON' : '🔇 Voz: OFF';
-      if (!voiceEnabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
-    }
+      if (!voiceEnabled) {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+      }
+    };
 
     function speakText(text) {
-      if (!voiceEnabled || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text.replace(/[*#_]/g, ''));
-      utter.lang = 'pt-BR';
-      window.speechSynthesis.speak(utter);
+      if (!voiceEnabled) return;
+      const cleanText = text.replace(/<[^>]*>/g, '').replace(/[*#_`~]/g, '').replace(/https?:\/\/\S+/g, '').trim();
+      if (!cleanText) return;
+
+      let spokenNatively = false;
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const voices = window.speechSynthesis.getVoices();
+          if (voices && voices.length > 0) {
+            const utter = new SpeechSynthesisUtterance(cleanText);
+            utter.lang = 'pt-BR';
+            window.speechSynthesis.speak(utter);
+            spokenNatively = true;
+          }
+        } catch (e) {}
+      }
+
+      if (!spokenNatively) {
+        try {
+          if (currentAudio) currentAudio.pause();
+          const shortText = cleanText.substring(0, 200);
+          const ttsUrl = `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=pt-BR&q=${encodeURIComponent(shortText)}`;
+          currentAudio = new Audio(ttsUrl);
+          currentAudio.play().catch(() => {});
+        } catch (e) {}
+      }
     }
 
     let recognition = null;
-    function toggleMic() {
+    window.toggleMic = function() {
       const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRec) {
-        alert('Reconhecimento de voz não suportado neste navegador.');
+        alert('Toque no ícone de microfone do próprio teclado do seu Samsung M31 para falar!');
+        document.getElementById('user-input').focus();
         return;
       }
       const micBtn = document.getElementById('mic-btn');
@@ -495,16 +922,17 @@
         recognition.lang = 'pt-BR';
         recognition.onstart = () => micBtn.classList.add('listening');
         recognition.onend = () => micBtn.classList.remove('listening');
+        recognition.onerror = () => micBtn.classList.remove('listening');
         recognition.onresult = (e) => {
           document.getElementById('user-input').value = e.results[0][0].transcript;
           sendMessage();
         };
       }
-      recognition.start();
-    }
+      try { recognition.start(); } catch (e) { recognition.stop(); }
+    };
 
     // Estúdio de Anime
-    function startAnimeEpisode() {
+    window.startAnimeEpisode = function() {
       const theme = document.getElementById('anime-prompt').value.trim() || 'Guerreiro místico em mundo de fantasia';
       const img = document.getElementById('anime-img');
       const sub = document.getElementById('anime-subtitle');
@@ -515,32 +943,33 @@
         sub.innerText = '🎬 Cena 1: ' + theme;
         speakText('Cena do anime renderizada com sucesso.');
       };
-    }
+    };
 
     // Compilador de Código
-    function runCompiler() {
+    window.runCompiler = function() {
       const code = document.getElementById('code-editor').value;
       const frame = document.getElementById('preview-frame');
       frame.srcdoc = code;
-    }
+    };
 
     // Memória Evolutiva e Cartão SD
-    function saveMemory() {
+    window.saveMemory = function() {
       aiMemory = document.getElementById('memory-notes').value;
       localStorage.setItem('core_ai_m31_memory', aiMemory);
       appendMsg('ai', '💾 Memória evolutiva atualizada com sucesso!');
-    }
+      speakText('Memória salva com sucesso.');
+    };
 
-    function exportMemorySD() {
+    window.exportMemorySD = function() {
       const data = JSON.stringify({ memory: aiMemory, date: new Date().toISOString() }, null, 2);
       const blob = new Blob([data], { type: 'application/json' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'memoria_core_ai_m31.json';
       a.click();
-    }
+    };
 
-    function importMemorySD(event) {
+    window.importMemorySD = function(event) {
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -554,9 +983,10 @@
         document.getElementById('memory-notes').value = aiMemory;
         localStorage.setItem('core_ai_m31_memory', aiMemory);
         appendMsg('ai', '📥 Memória do cartão SD carregada com sucesso!');
+        speakText('Memória do cartão SD carregada.');
       };
       reader.readAsText(file);
-    }
+    };
   </script>
 </body>
 </html>
