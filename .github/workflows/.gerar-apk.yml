@@ -1,0 +1,47 @@
+name: Montar e Compilar APK da IA
+
+on:
+  push:
+    branches: [ "main", "master", "principal" ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: 2. Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 3. Instalar Java 21 para Android
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+
+      - name: 4. Montar estrutura Android com Microfone e Internet
+        run: |
+          mkdir -p www
+          cp index.html www/index.html
+          echo '{"name": "core-ai-m31", "version": "1.0.0"}' > package.json
+          npm install @capacitor/core@^6.0.0 @capacitor/cli@^6.0.0 @capacitor/android@^6.0.0
+          npx cap init "Core AI" "com.coreai.m31" --web-dir www
+          npx cap add android
+          sed -i 's/<application/<uses-permission android:name="android.permission.RECORD_AUDIO" \/><uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" \/><application android:usesCleartextTraffic="true"/g' android/app/src/main/AndroidManifest.xml
+
+      - name: 5. Compilar o APK Final
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: 6. Entregar APK Pronto para Download
+        uses: actions/upload-artifact@v4
+        with:
+          name: Core-IA-M31-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
