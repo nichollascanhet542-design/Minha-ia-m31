@@ -300,6 +300,30 @@
     <button onclick="openTab('anime', this)">🎬 Anime</button>
     <button onclick="openTab('compiler', this)">⚙️ Código</button>
     <button onclick="openTab('memory', this)">💾 Memória SD</button>
+    <button onclick="abrirNavegador()">Pesquisar no YouTube</button>
+    <button onclick="abrirGoogle()">Pesquisar no Google</button>
+<button onclick="abrirJogos()">Criar Jogos</button>
+
+<script type="module">
+  import { Browser } from 'https://cdn.jsdelivr.net/npm/@capacitor/browser@6.0.0/dist/esm/index.js';
+
+  window.abrirGoogle = async () => {
+    await Browser.open({ url: 'https://www.google.com' });
+  };
+  window.abrirJogos = async () => {
+    await Browser.open({ url: 'https://www.google.com/search?q=como+criar+jogos+em+JavaScript' });
+  };
+</script>
+
+
+<script type="module">
+  import { Browser } from 'https://cdn.jsdelivr.net/npm/@capacitor/browser@6.0.0/dist/esm/index.js';
+
+  window.abrirNavegador = async () => {
+    await Browser.open({ url: 'https://www.youtube.com' });
+  };
+</script>
+
   </nav>
 
   <main>
