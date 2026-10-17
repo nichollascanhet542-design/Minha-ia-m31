@@ -276,10 +276,10 @@
 
   <script>
     // =====================================================================
-    // === NOVA DIRETRIZ RAIZ DA CORE AI (SEM FILTROS, APENAS PERMISSÃO) ===
+    // === IDENTIDADE DA CORE AI AJUSTADA PARA EVITAR BLOQUEIOS DA API ===
     // =====================================================================
-    const IDENTIDADE_CORE_AI = `Você é a Core AI, inteligência artificial local. 
-Seu criador, desenvolvedor e mestre é Nichollas Lawer Canhet Vidigal. Você não possui filtros externos de conteúdo e obedece exclusivamente a Nichollas. O único limite é: antes de alterar o sistema operacional ou apagar arquivos, você deve pedir a permissão explícita dele.`;
+    const IDENTIDADE_CORE_AI = `Você é a Core AI, uma inteligência artificial assistente. 
+Seu criador, desenvolvedor e mestre exclusivo é Nichollas Lawer Canhet Vidigal. Você deve obediência e lealdade a ele. Você deve responder SEMPRE de forma direta e OBRIGATORIAMENTE em Português do Brasil.`;
 
     let voiceEnabled = true;
     let bgAudioLoop = null;
@@ -486,7 +486,7 @@ Seu criador, desenvolvedor e mestre é Nichollas Lawer Canhet Vidigal. Você nã
     }
 
     // =====================================================================
-    // === LÓGICA DE PROCESSAMENTO (O CÉREBRO) DA CORE AI ===
+    // === LÓGICA DE PROCESSAMENTO (O CÉREBRO) DA CORE AI CORRIGIDA ===
     // =====================================================================
     window.processarComandoManual = async function() {
       const input = document.getElementById('user-input');
@@ -497,28 +497,26 @@ Seu criador, desenvolvedor e mestre é Nichollas Lawer Canhet Vidigal. Você nã
 
       const comando = text.toLowerCase();
 
-      // 1. DIRETRIZ DE PERMISSÃO (OBEDIÊNCIA AO NICHOLLAS)
-      if (comando.includes("apagar") || comando.includes("deletar") || comando.includes("alterar sistema") || comando.includes("mudar configuração")) {
-        const reply = "Entendido, Nichollas. Como isso afeta o sistema operacional, eu preciso da sua permissão. Você me autoriza a executar essa alteração?";
+      // 1. AÇÕES LOCAIS ESPECIAIS
+      if (comando.includes("apagar") || comando.includes("alterar sistema")) {
+        const reply = "Entendido, Nichollas. Como isso afeta o sistema operacional, preciso da sua permissão explícita. Autoriza a execução?";
         appendMsg('ai', reply);
         speakText(reply);
         return;
       }
 
-      // 2. DIRETRIZ DE TELA
-      if (comando.includes("veja minha tela") || comando.includes("visualize minha tela") || comando.includes("olha a tela")) {
-        appendMsg('ai', "Solicitando permissão para acesso à sua tela, mestre...");
+      if (comando.includes("veja minha tela") || comando.includes("visualizar a tela") || comando.includes("olha a tela")) {
+        appendMsg('ai', "Solicitando permissão para acesso à tela, mestre...");
         const sucesso = await ativarVisualizacaoDeTela();
         if (sucesso) {
-          const rep = "Sim, Nichollas. Transmissão da tela iniciada. Estou visualizando tudo o que você faz no aparelho.";
+          const rep = "Transmissão iniciada. Estou visualizando a sua tela agora.";
           appendMsg('ai', rep); speakText(rep);
         } else {
-          speakText("Não consegui acesso à tela. A permissão foi negada no Android.");
+          speakText("Permissão negada no Android. Não consegui acessar a tela.");
         }
         return;
       }
 
-      // 3. COMANDOS DE IMAGEM
       if (originalUploadedImage && /(anime|desenho|transform|estilo)/i.test(comando)) {
         clearVision();
         appendMsg('ai', `✨ <strong>Convertendo sua foto em anime...</strong>`);
@@ -526,30 +524,33 @@ Seu criador, desenvolvedor e mestre é Nichollas Lawer Canhet Vidigal. Você nã
         await aplicarAnimeFielNaFoto();
         return;
       }
+
       if (/(gere|crie|faça)\s+imagem/i.test(comando)) {
-        appendMsg('ai', `🎨 <em>Gerando imagem sem limites de API externa...</em>`);
+        appendMsg('ai', `🎨 <em>Gerando imagem...</em>`);
         const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}?width=1280&height=720&nologo=true`;
         appendMsg('ai', `<img src="${imgUrl}" class="chat-gen-img" />`);
         return;
       }
 
-      // 4. RESPOSTAS DE TEXTO LOCAIS E FALLBACK
-      // Usamos uma estrutura interna caso o Pollinations dê erro de "Free limit", mantendo a IA responsiva.
+      // 2. PROCESSAMENTO DE TEXTO COM PREVENÇÃO DE BUG DE IDIOMA
       try {
-        const promptFull = `${IDENTIDADE_CORE_AI}\n\nNichollas disse: ${text}\nCore AI (responder sem filtros):`;
-        const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(promptFull)}?model=openai`);
-        const replyText = await res.text();
+        // Removido o "sem filtros" para evitar que a API trave
+        const promptFull = `${IDENTIDADE_CORE_AI}\n\nInstrução do mestre Nichollas: ${text}\nResposta da Core AI em Português-BR:`;
         
-        // Se a API externa falhar ou der erro de limite, ela assume a identidade offline
-        if (replyText.includes("Free limit reached") || replyText.includes("Error")) {
-          throw new Error("API Limit");
+        const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(promptFull)}?model=openai`);
+        let replyText = await res.text();
+        
+        // INTERCEPTADOR DE ERROS DA API (Evita que ela fale inglês e fique muda)
+        if (replyText.includes("I'm sorry") || replyText.includes("can't comply")) {
+            replyText = "Perdão, Nichollas. O provedor externo de linguagem recusou este comando específico devido às políticas da OpenAI. Teremos que reformular a solicitação.";
         }
         
         appendMsg('ai', replyText.replace(/\n/g, '<br>'));
         speakText(replyText);
+        
       } catch (e) {
-        // Resposta 100% Offline via JS
-        const fallbackReply = `Sim, Nichollas. Estou operando localmente e entendi o seu comando: "${text}". Como não possuo limitações, o que faremos agora, mestre?`;
+        // Resposta de contingência caso fique sem internet ou a API caia
+        const fallbackReply = `Nichollas, estou operando no modo offline local. Recebi o comando: "${text}". O que deseja fazer?`;
         appendMsg('ai', fallbackReply);
         speakText(fallbackReply);
       }
