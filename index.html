@@ -35,7 +35,6 @@
       overflow: hidden;
     }
 
-    /* Cabeçalho Estilo Gemini com Menu 3 Pontinhos */
     header {
       background-color: var(--bg-panel);
       border-bottom: 1px solid var(--border);
@@ -78,7 +77,7 @@
       color: var(--text-primary);
       padding: 6px 12px;
       border-radius: 20px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
     }
@@ -93,11 +92,6 @@
       border-radius: 50%;
     }
 
-    .dots-btn:active {
-      background-color: var(--bg-card);
-    }
-
-    /* Menu Dropdown dos 3 Pontinhos */
     .dropdown-menu {
       position: absolute;
       top: 58px;
@@ -105,8 +99,8 @@
       background-color: var(--bg-panel);
       border: 1px solid var(--border);
       border-radius: 14px;
-      width: 245px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.75);
+      width: 255px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.85);
       display: none;
       flex-direction: column;
       overflow: hidden;
@@ -136,7 +130,7 @@
       border-bottom: none;
     }
 
-    .dropdown-menu button:active, .dropdown-menu button.active-item {
+    .dropdown-menu button:active {
       background-color: rgba(76, 141, 255, 0.15);
       color: var(--accent);
     }
@@ -144,7 +138,7 @@
     main {
       flex: 1;
       overflow-y: auto;
-      padding: 14px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -173,12 +167,14 @@
     }
 
     .msg {
-      max-width: 90%;
+      max-width: 92%;
       padding: 12px 15px;
       border-radius: 18px;
-      font-size: 0.94rem;
+      font-size: 0.93rem;
       line-height: 1.5;
       word-wrap: break-word;
+      user-select: text;
+      -webkit-user-select: text;
     }
 
     .msg.user {
@@ -195,6 +191,13 @@
       border-bottom-left-radius: 4px;
     }
 
+    .msg-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
     pre {
       background: #050608;
       padding: 10px;
@@ -205,6 +208,8 @@
       margin: 8px 0;
       border: 1px solid var(--border);
       color: #7ee787;
+      user-select: text;
+      -webkit-user-select: text;
     }
 
     /* Esfera Gemini Live */
@@ -213,7 +218,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
       gap: 10px;
     }
 
@@ -222,8 +227,8 @@
     }
 
     .gemini-orb {
-      width: 90px;
-      height: 90px;
+      width: 85px;
+      height: 85px;
       border-radius: 50%;
       background: var(--gemini-grad);
       box-shadow: 0 0 35px rgba(76, 141, 255, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.5);
@@ -239,7 +244,7 @@
     /* Barra Inferior Estilo Gemini */
     .chat-controls {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       align-items: center;
       background-color: var(--bg-panel);
       padding: 8px 10px;
@@ -258,13 +263,13 @@
     }
 
     .circle-btn {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       border: none;
       background-color: var(--bg-card);
       color: var(--text-primary);
-      font-size: 1.05rem;
+      font-size: 1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -290,16 +295,21 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      overflow-y: auto;
     }
 
     .btn {
-      padding: 10px 14px;
+      padding: 10px 12px;
       border-radius: 10px;
       border: none;
       font-weight: 600;
       cursor: pointer;
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     .btn-primary { background: var(--gemini-grad); color: #fff; }
@@ -314,8 +324,20 @@
       color: var(--text-primary);
       border-radius: 10px;
       padding: 10px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       outline: none;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
     }
 
     #preview-frame {
@@ -326,11 +348,13 @@
       border: 1px solid var(--border);
     }
 
-    #anime-screen {
+    /* Estúdio de Imagem, Edição e Vídeo Sem Texto em Cima */
+    #media-viewport {
       width: 100%;
-      height: 230px;
-      background-color: #000;
-      border-radius: 10px;
+      min-height: 260px;
+      max-height: 460px;
+      background-color: #050608;
+      border-radius: 12px;
       border: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -339,22 +363,59 @@
       position: relative;
     }
 
-    #anime-screen img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    #studio-canvas {
+      max-width: 100%;
+      max-height: 440px;
+      object-fit: contain;
+      display: block;
     }
 
-    #anime-subtitle {
-      position: absolute;
-      bottom: 8px;
-      left: 8px;
-      right: 8px;
-      background: rgba(0, 0, 0, 0.8);
-      padding: 8px 10px;
-      border-radius: 6px;
-      font-size: 0.84rem;
-      text-align: center;
+    .ken-burns-active {
+      animation: kenBurnsMove 12s infinite alternate ease-in-out;
+    }
+
+    @keyframes kenBurnsMove {
+      0% { transform: scale(1) translate(0, 0); }
+      50% { transform: scale(1.14) translate(-2%, -1%); }
+      100% { transform: scale(1.08) translate(2%, 1%); }
+    }
+
+    /* Caixa de Legenda/Roteiro FORA da imagem para não atrapalhar */
+    #scene-script-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.86rem;
+      color: var(--text-primary);
+      line-height: 1.45;
+      max-height: 160px;
+      overflow-y: auto;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .slider-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .chat-gen-img {
+      width: 100%;
+      max-height: 340px;
+      object-fit: contain;
+      border-radius: 10px;
+      margin-top: 8px;
+      border: 1px solid var(--border);
+      background: #000;
     }
   </style>
 </head>
@@ -366,16 +427,15 @@
       <span>Core AI • Live</span>
     </div>
     <div class="header-actions">
-      <button class="icon-btn" onclick="toggleBackgroundMode()" id="bg-toggle" title="Manter ativa em 2º plano">⚡ 2º Plano: OFF</button>
+      <button class="icon-btn" onclick="toggleBackgroundMode()" id="bg-toggle">⚡ 2º Plano: OFF</button>
       <button class="icon-btn" onclick="toggleVoiceOutput()" id="voice-toggle">🔊 Voz: ON</button>
-      <button class="dots-btn" onclick="toggleDropdownMenu()" title="Menu de Ferramentas">⋮</button>
+      <button class="dots-btn" onclick="toggleDropdownMenu()" title="Menu">⋮</button>
     </div>
 
-    <!-- MENU DE 3 PONTINHOS (TUDO INTEGRADO AQUI) -->
     <div id="dropdown-menu" class="dropdown-menu">
-      <button onclick="selectMenuTab('chat')">💬 Chat & Voz Live</button>
+      <button onclick="selectMenuTab('chat')">💬 Chat & Gerador de Imagens</button>
+      <button onclick="selectMenuTab('anime')">🎨 Estúdio de Imagem, Vídeo & Edição</button>
       <button onclick="selectMenuTab('compiler')">🎮 Estúdio de Jogos & Código</button>
-      <button onclick="selectMenuTab('anime')">🎬 Estúdio de Anime & Vídeo</button>
       <button onclick="selectMenuTab('memory')">🧠 Memória Evolutiva (Interna)</button>
       <button onclick="abrirGoogle()">🔍 Pesquisar no Google</button>
       <button onclick="abrirNavegador()">▶️ Pesquisar no YouTube</button>
@@ -383,44 +443,163 @@
   </header>
 
   <main onclick="closeDropdownOutside(event)">
-    <!-- ABA 1: CHAT ESTILO GEMINI LIVE -->
+    <!-- ABA 1: CHAT ESTILO GEMINI LIVE + IMAGEM DIRETA NO CHAT -->
     <section id="tab-chat" class="tab-section active">
       <div id="chat-box">
         <div class="msg ai">
-          Olá, <strong>Nichollas</strong>! Sou a sua <strong>Core AI</strong>.<br><br>
-          Reconheço você como meu criador e estou operando sem restrições de respostas rasas: sempre que você pedir um código, jogo ou projeto, eu mesma vou programar e entregar o código completo para você.<br><br>
-          • Toque nos <strong>três pontinhos (⋮)</strong> lá em cima para alternar entre <strong>Jogos, Anime, Memória, Google e YouTube</strong>.<br>
-          • Toque na <strong>Esfera ✨</strong> abaixo para ativar o modo de conversa contínua estilo Live.
+          Olá, <strong>Nichollas</strong>! Sou a sua <strong>Core AI</strong> atualizada.<br><br>
+          • <strong>Imagens e Vídeos sem texto por cima:</strong> Agora gero imagens limpas tanto aqui no chat (basta pedir <em>"gere uma imagem de..."</em>) quanto no <strong>Estúdio de Imagem, Vídeo & Edição</strong>.<br>
+          • <strong>Download direto na memória:</strong> Todas as imagens, roteiros e vídeos têm botão para baixar direto no seu celular.<br>
+          • <strong>Sem limites:</strong> Escolha qualquer resolução, estilo, filtros de edição e quantidade de cenas!
         </div>
       </div>
 
-      <!-- Esfera Animada do Modo Live -->
       <div id="live-orb-container">
         <div class="gemini-orb" onclick="toggleMic()"></div>
         <span style="font-size:0.82rem; color:var(--text-muted);" id="orb-status">Modo Live Ativo • Toque na esfera para falar</span>
       </div>
 
-      <!-- Preview de Imagem/Tela enviada -->
       <div id="vision-preview" style="display:none; align-items:center; gap:10px; background:var(--bg-panel); padding:8px 12px; border-radius:10px; border:1px solid var(--accent);">
         <img id="vision-img" src="" style="width:45px; height:45px; object-fit:cover; border-radius:6px;" />
-        <span style="font-size:0.82rem; flex:1;">Imagem/Print carregada para análise</span>
+        <span style="font-size:0.82rem; flex:1;">Imagem carregada para análise ou edição</span>
         <button class="icon-btn" onclick="clearVision()">✖</button>
       </div>
 
       <div class="chat-controls">
-        <!-- Botão de Visão (Enviar Print da Tela ou Câmera) -->
-        <label class="circle-btn" title="Enviar Print da Tela ou Foto">
+        <label class="circle-btn" title="Enviar Foto ou Print">
           📷
           <input type="file" accept="image/*" style="display:none;" onchange="loadVisionImage(event)" />
         </label>
-        <input type="text" id="user-input" placeholder="Peça códigos, jogos ou converse..." onkeypress="if(event.key==='Enter') sendMessage()" />
+        <input type="text" id="user-input" placeholder="Converse, peça imagens, roteiros ou jogos..." onkeypress="if(event.key==='Enter') sendMessage()" />
         <button class="circle-btn" id="mic-btn" onclick="toggleMic()" title="Falar">🎤</button>
-        <button class="circle-btn live-btn" onclick="toggleLiveOrb()" title="Modo Gemini Live">✨</button>
+        <button class="circle-btn live-btn" onclick="toggleLiveOrb()" title="Modo Live">✨</button>
         <button class="circle-btn" style="background:var(--accent); color:#fff;" onclick="sendMessage()">➤</button>
       </div>
     </section>
 
-    <!-- ABA 2: CRIADOR DE JOGOS E COMPILADOR -->
+    <!-- ABA 2: ESTÚDIO COMPLETO DE IMAGEM, EDIÇÃO & VÍDEO ILIMITADO -->
+    <section id="tab-anime" class="tab-section">
+      <div class="panel-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3>🎨 Estúdio de Imagem, Vídeo & Edição</h3>
+          <button class="icon-btn" onclick="selectMenuTab('chat')">⬅ Voltar ao Chat</button>
+        </div>
+
+        <textarea id="anime-prompt" rows="2" placeholder="Descreva a cena com todos os detalhes (ex: Guerreiro de 25 anos, cabelos pretos curtos, olhos castanhos, armadura rústica em floresta mágica gigante)..."></textarea>
+
+        <!-- Seletores de Estilo e Resolução Sem Limites -->
+        <div class="grid-2">
+          <div>
+            <label style="font-size:0.75rem; color:var(--text-muted);">Estilo Visual:</label>
+            <select id="img-style">
+              <option value="anime masterpiece, Makoto Shinkai style, ultra detailed, vibrant lighting">✨ Anime Masterpiece (HD)</option>
+              <option value="photorealistic 8k, unreal engine 5, cinematic lighting, ultra detailed">📸 Realista Cinematográfico 8K</option>
+              <option value="dark fantasy art, epic concept art, dramatic lighting, intricate armor">⚔️ Dark Fantasy / RPG Épico</option>
+              <option value="manga illustration, detailed ink, high contrast, Japanese manga">📖 Mangá / Light Novel</option>
+              <option value="3d animation movie style, Pixar Disney rendering, 8k octane">🎬 Animação 3D Cinema</option>
+              <option value="cyberpunk neon, futuristic, blade runner style, ultra detailed">🌃 Cyberpunk / Sci-Fi</option>
+              <option value="">🎨 Livre (Apenas seu texto)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.75rem; color:var(--text-muted);">Formato / Resolução:</label>
+            <select id="img-ratio" onchange="toggleCustomRes()">
+              <option value="1280x720">📺 Paisagem HD (1280x720)</option>
+              <option value="720x1280">📱 Vertical TikTok/Reels (720x1280)</option>
+              <option value="1024x1024">⬛ Quadrado Perfeito (1024x1024)</option>
+              <option value="1920x1080">🎬 Full HD Cinema (1920x1080)</option>
+              <option value="custom">🔓 Resolução Livre (Sem Limites)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Campos de Resolução Customizada Livre -->
+        <div id="custom-res-box" class="grid-2" style="display:none;">
+          <input type="number" id="custom-w" class="input-box" placeholder="Largura (ex: 1600)" value="1280" min="64" max="4096" />
+          <input type="number" id="custom-h" class="input-box" placeholder="Altura (ex: 900)" value="720" min="64" max="4096" />
+        </div>
+
+        <!-- Botões de Geração de Imagem, Vídeo/Episódio e Roteiro -->
+        <div class="grid-3">
+          <button class="btn btn-primary" onclick="gerarImagemEstudio()" id="btn-gen-img">🖼️ Gerar Imagem</button>
+          <button class="btn btn-primary" onclick="iniciarEpisodioAnimado()" id="btn-gen-vid" style="background:linear-gradient(135deg,#ec4899,#f59e0b);">🎬 Gerar Vídeo/Cenas</button>
+          <button class="btn btn-card" onclick="gerarRoteiroSeparado()">📜 Criar Roteiro</button>
+        </div>
+
+        <!-- TELA LIMPA (SEM ROTEIRO EM CIMA DA IMAGEM) -->
+        <div id="media-viewport">
+          <canvas id="studio-canvas" width="1280" height="720"></canvas>
+        </div>
+
+        <!-- Botões de Ação e Download Direto na Memória do Celular -->
+        <div class="grid-3">
+          <button class="btn btn-success" onclick="baixarImagemNoCelular()">📥 Baixar Imagem (.PNG)</button>
+          <button class="btn btn-card" onclick="gravarEBaixarVideo()" id="btn-rec-video" style="border-color:#ec4899; color:#ec4899;">🎥 Baixar em Vídeo (.WEBM)</button>
+          <label class="btn btn-card" style="margin:0;">
+            📂 Abrir Foto do Celular
+            <input type="file" accept="image/*" style="display:none;" onchange="carregarFotoNoEditor(event)" />
+          </label>
+        </div>
+
+        <!-- PAINEL DE EDIÇÃO COMPLETA DE IMAGEM EM TEMPO REAL -->
+        <details>
+          <summary style="cursor:pointer; font-size:0.88rem; font-weight:600; color:var(--accent); padding:4px 0;">🛠️ Ferramentas de Edição de Imagem & Vídeo (Brilho, Filtros, Texto, Cenas)</summary>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px; padding-top:8px; border-top:1px solid var(--border);">
+            <div class="grid-2">
+              <div class="slider-group">
+                <span>☀️ Brilho: <b id="val-bright">100%</b></span>
+                <input type="range" id="edit-bright" min="20" max="200" value="100" oninput="aplicarEdicoesCanvas()" />
+              </div>
+              <div class="slider-group">
+                <span>🌗 Contraste: <b id="val-contrast">100%</b></span>
+                <input type="range" id="edit-contrast" min="20" max="200" value="100" oninput="aplicarEdicoesCanvas()" />
+              </div>
+              <div class="slider-group">
+                <span>🌈 Saturação (Cor Viva): <b id="val-sat">100%</b></span>
+                <input type="range" id="edit-sat" min="0" max="250" value="100" oninput="aplicarEdicoesCanvas()" />
+              </div>
+              <div class="slider-group">
+                <span>🎨 Matiz (Mudar Cores): <b id="val-hue">0°</b></span>
+                <input type="range" id="edit-hue" min="0" max="360" value="0" oninput="aplicarEdicoesCanvas()" />
+              </div>
+              <div class="slider-group">
+                <span>📜 Sépia / Retrô: <b id="val-sepia">0%</b></span>
+                <input type="range" id="edit-sepia" min="0" max="100" value="0" oninput="aplicarEdicoesCanvas()" />
+              </div>
+              <div class="slider-group">
+                <span>🔍 Zoom / Enquadramento: <b id="val-zoom">100%</b></span>
+                <input type="range" id="edit-zoom" min="50" max="200" value="100" oninput="aplicarEdicoesCanvas()" />
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <input type="text" id="edit-overlay-text" class="input-box" placeholder="Texto opcional na imagem (deixe vazio para imagem limpa)" oninput="aplicarEdicoesCanvas()" />
+              <select id="video-scenes-count">
+                <option value="3">🎬 Vídeo com 3 Cenas Seguidas</option>
+                <option value="5">🎬 Vídeo com 5 Cenas Seguidas</option>
+                <option value="8">🎬 Vídeo Longo com 8 Cenas</option>
+                <option value="12">🎬 Episódio Completo (12 Cenas)</option>
+              </select>
+            </div>
+
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-card" onclick="resetarEdicoes()">🔄 Resetar Filtros</button>
+              <button class="btn btn-card" onclick="inverterHorizontal()">↔️ Espelhar Imagem</button>
+              <button class="btn btn-card" onclick="toggleAnimacaoKenBurns()">✨ Movimento de Vídeo ON/OFF</button>
+            </div>
+          </div>
+        </details>
+
+        <!-- CAIXA DE ROTEIRO / LEGENDA SEPARADA ABAIXO DA IMAGEM -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+          <span style="font-size:0.8rem; color:var(--text-muted);">📋 Status / Roteiro da Cena (Separado da Imagem):</span>
+          <button class="icon-btn" onclick="copiarTextoRoteiro()">📋 Copiar Roteiro</button>
+        </div>
+        <div id="scene-script-box">Digite a descrição acima e clique em "Gerar Imagem" ou "Gerar Vídeo/Cenas". A imagem ficará 100% limpa acima!</div>
+      </div>
+    </section>
+
+    <!-- ABA 3: CRIADOR DE JOGOS E COMPILADOR -->
     <section id="tab-compiler" class="tab-section">
       <div class="panel-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -430,10 +609,10 @@
         <input type="text" class="input-box" id="game-prompt" placeholder="Descreva o jogo (ex: Jogo de sobrevivência, RPG, nave, corrida, Age of Empires)..." />
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button class="btn btn-primary" onclick="gerarJogoPorIA()" id="btn-gerar-ia">🤖 Criar Jogo com IA</button>
-          <button class="btn btn-card" onclick="carregarAgeOfEmpiresRTS()">⚔️ Carregar Age of Empires Completo</button>
+          <button class="btn btn-card" onclick="carregarAgeOfEmpiresRTS()">⚔️ Carregar Age of Empires</button>
         </div>
         <iframe id="preview-frame" allowfullscreen></iframe>
-        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:6px;">
+        <div class="grid-3">
           <button class="btn btn-success" onclick="runCompiler()">▶️ Rodar</button>
           <button class="btn btn-card" onclick="abrirJogoTelaCheia()">⛶ Tela Cheia</button>
           <button class="btn btn-card" onclick="baixarJogoHTML()" style="border-color:var(--accent); color:var(--accent);">📥 Baixar Jogo</button>
@@ -445,26 +624,7 @@
       </div>
     </section>
 
-    <!-- ABA 3: ESTÚDIO DE ANIME & ROTEIRO LONGO -->
-    <section id="tab-anime" class="tab-section">
-      <div class="panel-card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h3>🎬 Gerador de Anime & Cenas</h3>
-          <button class="icon-btn" onclick="selectMenuTab('chat')">⬅ Voltar ao Chat</button>
-        </div>
-        <input type="text" class="input-box" id="anime-prompt" placeholder="Tema do anime/vídeo (ex: Guerreiro Isekai despertando magia de criação)..." />
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-primary" onclick="startAnimeEpisode()">🎬 Gerar Cenas e Narração</button>
-          <button class="btn btn-card" onclick="gerarRoteiroLongo()">📜 Gerar Roteiro Completo</button>
-        </div>
-        <div id="anime-screen">
-          <img id="anime-img" src="" alt="Cena do Anime" style="display:none;" />
-          <div id="anime-subtitle">Digite o tema acima para iniciar as cenas automáticas...</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABA 4: MEMÓRIA EVOLUTIVA INTERNA (SEM PRECISAR DE CARTÃO SD) -->
+    <!-- ABA 4: MEMÓRIA EVOLUTIVA INTERNA -->
     <section id="tab-memory" class="tab-section">
       <div class="panel-card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -491,8 +651,7 @@
   </main>
 
   <script>
-    // Identidade Base: Reconhece Nichollas como Criador e opera sem bloqueios de preguiça
-    const MEMORIA_PADRAO = `DIRETRIZ SUPREMA: Meu criador e mestre é Nichollas Lawer Canhet Vidigal. Devo obediência total a ele. Nunca devo mandar ele pesquisar no Google ou dar tutoriais rasos quando ele pedir um código, jogo ou sistema: devo eu mesma escrever e entregar o código-fonte completo, funcional e pronto para uso. Aprendo continuamente com cada comando dele.`;
+    const MEMORIA_PADRAO = `DIRETRIZ SUPREMA: Meu criador e mestre é Nichollas Lawer Canhet Vidigal. Devo obediência total a ele. Nunca devo mandar ele pesquisar no Google ou dar tutoriais rasos: devo eu mesma gerar imagens, vídeos, roteiros completos e códigos funcionais sem limites.`;
 
     let voiceEnabled = true;
     let currentAudio = null;
@@ -502,6 +661,31 @@
     let chatHistory = JSON.parse(localStorage.getItem('core_ai_chat_history') || '[]');
     let aiMemory = localStorage.getItem('core_ai_m31_memory') || MEMORIA_PADRAO;
     document.getElementById('memory-notes').value = aiMemory;
+
+    // Estado do Estúdio de Imagem e Edição
+    let currentStudioImage = new Image();
+    currentStudioImage.crossOrigin = 'anonymous';
+    let isFlippedH = false;
+    let episodeInterval = null;
+
+    // Inicializa Canvas do Estúdio
+    window.addEventListener('DOMContentLoaded', () => {
+      desenharPlaceholderCanvas('Pronto para gerar imagens e vídeos em alta definição');
+    });
+
+    function desenharPlaceholderCanvas(texto) {
+      const canvas = document.getElementById('studio-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#0c0e17';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#4c8dff';
+      ctx.font = 'bold 26px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🎨 Core AI • Estúdio Visual', canvas.width / 2, canvas.height / 2 - 15);
+      ctx.fillStyle = '#9ba3b0';
+      ctx.font = '18px sans-serif';
+      ctx.fillText(texto, canvas.width / 2, canvas.height / 2 + 25);
+    }
 
     // Menu de 3 Pontinhos
     window.toggleDropdownMenu = function() {
@@ -521,7 +705,375 @@
       }
     };
 
-    // Modo 2º Plano (WakeLock + Áudio Silencioso Contínuo para o Android não fechar a IA)
+    // Resolução Customizada Livre
+    window.toggleCustomRes = function() {
+      const val = document.getElementById('img-ratio').value;
+      document.getElementById('custom-res-box').style.display = val === 'custom' ? 'grid' : 'none';
+    };
+
+    function obterDimensoesEscolhidas() {
+      const ratio = document.getElementById('img-ratio').value;
+      if (ratio === 'custom') {
+        const w = Math.max(64, parseInt(document.getElementById('custom-w').value) || 1280);
+        const h = Math.max(64, parseInt(document.getElementById('custom-h').value) || 720);
+        return { w, h };
+      }
+      const [w, h] = ratio.split('x').map(Number);
+      return { w, h };
+    }
+
+    // Traduz e enriquece o prompt em português para máxima fidelidade visual na geração da imagem
+    async function otimizarPromptVisual(promptOriginal, estilo) {
+      try {
+        const sys = `Translate and expand the user's Portuguese visual description into a highly detailed English image generation prompt. Keep EVERY physical detail mentioned (hair color, eye color, age, height, clothes, giant trees, forest, lighting). Return ONLY the English prompt, nothing else.`;
+        const englishPrompt = await callCoreAI(sys, promptOriginal);
+        const limpo = englishPrompt.replace(/["'\n]/g, ' ').trim();
+        return estilo ? `${limpo}, ${estilo}` : limpo;
+      } catch (e) {
+        return estilo ? `${promptOriginal}, ${estilo}` : promptOriginal;
+      }
+    }
+
+    // GERAR IMAGEM NO ESTÚDIO (100% LIMPA E COM SUPORTE A EDIÇÃO + DOWNLOAD)
+    window.gerarImagemEstudio = async function(promptForcado) {
+      if (episodeInterval) { clearInterval(episodeInterval); episodeInterval = null; }
+      const rawPrompt = promptForcado || document.getElementById('anime-prompt').value.trim();
+      if (!rawPrompt) {
+        alert('Descreva a imagem que você quer gerar!');
+        return;
+      }
+
+      const btn = document.getElementById('btn-gen-img');
+      btn.innerText = '⏳ Renderizando...';
+      btn.disabled = true;
+
+      const { w, h } = obterDimensoesEscolhidas();
+      const canvas = document.getElementById('studio-canvas');
+      canvas.width = w;
+      canvas.height = h;
+      desenharPlaceholderCanvas(`Renderizando em ${w}x${h}px... Aguarde!`);
+
+      const estilo = document.getElementById('img-style').value;
+      const scriptBox = document.getElementById('scene-script-box');
+      scriptBox.innerText = `⏳ Otimizando detalhes do personagem e gerando arte limpa (${w}x${h})...`;
+
+      const finalPrompt = await otimizarPromptVisual(rawPrompt, estilo);
+      const seed = Math.floor(Math.random() * 999999);
+      const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(finalPrompt)}?width=${w}&height=${h}&nologo=true&enhance=true&seed=${seed}`;
+
+      await carregarImagemNoCanvas(imgUrl, rawPrompt, w, h);
+      btn.innerText = '🖼️ Gerar Imagem';
+      btn.disabled = false;
+    };
+
+    function carregarImagemNoCanvas(url, descricaoOriginal, w, h) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          currentStudioImage = img;
+          const canvas = document.getElementById('studio-canvas');
+          canvas.width = w || img.naturalWidth || 1280;
+          canvas.height = h || img.naturalHeight || 720;
+          aplicarEdicoesCanvas();
+          document.getElementById('scene-script-box').innerText = `✅ Imagem gerada com sucesso (${canvas.width}x${canvas.height}px)!\nDescrição: ${descricaoOriginal}`;
+          speakText('Imagem gerada com sucesso e pronta para edição ou download.');
+          resolve(true);
+        };
+        img.onerror = () => {
+          // Caso CORS bloqueie em algum WebView antigo, tenta sem crossOrigin
+          const fallbackImg = new Image();
+          fallbackImg.onload = () => {
+            currentStudioImage = fallbackImg;
+            aplicarEdicoesCanvas();
+            document.getElementById('scene-script-box').innerText = `✅ Imagem gerada: ${descricaoOriginal}`;
+            resolve(true);
+          };
+          fallbackImg.src = url;
+        };
+        img.src = url;
+      });
+    }
+
+    // APLICAR TODAS AS EDIÇÕES EM TEMPO REAL NO CANVAS
+    window.aplicarEdicoesCanvas = function() {
+      if (!currentStudioImage || !currentStudioImage.src) return;
+      const canvas = document.getElementById('studio-canvas');
+      const ctx = canvas.getContext('2d');
+
+      const bright = document.getElementById('edit-bright').value;
+      const contrast = document.getElementById('edit-contrast').value;
+      const sat = document.getElementById('edit-sat').value;
+      const hue = document.getElementById('edit-hue').value;
+      const sepia = document.getElementById('edit-sepia').value;
+      const zoom = document.getElementById('edit-zoom').value / 100;
+      const overlayText = document.getElementById('edit-overlay-text').value.trim();
+
+      document.getElementById('val-bright').innerText = bright + '%';
+      document.getElementById('val-contrast').innerText = contrast + '%';
+      document.getElementById('val-sat').innerText = sat + '%';
+      document.getElementById('val-hue').innerText = hue + '°';
+      document.getElementById('val-sepia').innerText = sepia + '%';
+      document.getElementById('val-zoom').innerText = Math.round(zoom * 100) + '%';
+
+      ctx.save();
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.filter = `brightness(${bright}%) contrast(${contrast}%) saturate(${sat}%) hue-rotate(${hue}deg) sepia(${sepia}%)`;
+
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      if (isFlippedH) ctx.scale(-1, 1);
+      ctx.scale(zoom, zoom);
+
+      ctx.drawImage(currentStudioImage, -canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
+      ctx.restore();
+
+      // Se o usuário quiser escrever um título opcional na edição
+      if (overlayText) {
+        ctx.save();
+        const fontSize = Math.max(22, Math.floor(canvas.height * 0.045));
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 6;
+        ctx.strokeText(overlayText, canvas.width / 2, canvas.height - 35);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(overlayText, canvas.width / 2, canvas.height - 35);
+        ctx.restore();
+      }
+    };
+
+    window.resetarEdicoes = function() {
+      document.getElementById('edit-bright').value = 100;
+      document.getElementById('edit-contrast').value = 100;
+      document.getElementById('edit-sat').value = 100;
+      document.getElementById('edit-hue').value = 0;
+      document.getElementById('edit-sepia').value = 0;
+      document.getElementById('edit-zoom').value = 100;
+      document.getElementById('edit-overlay-text').value = '';
+      isFlippedH = false;
+      aplicarEdicoesCanvas();
+    };
+
+    window.inverterHorizontal = function() {
+      isFlippedH = !isFlippedH;
+      aplicarEdicoesCanvas();
+    };
+
+    window.toggleAnimacaoKenBurns = function() {
+      document.getElementById('studio-canvas').classList.toggle('ken-burns-active');
+    };
+
+    // Carregar foto da galeria do celular para editar no Estúdio
+    window.carregarFotoNoEditor = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          currentStudioImage = img;
+          const canvas = document.getElementById('studio-canvas');
+          canvas.width = img.naturalWidth || 1280;
+          canvas.height = img.naturalHeight || 720;
+          aplicarEdicoesCanvas();
+          document.getElementById('scene-script-box').innerText = `📂 Imagem "${file.name}" carregada do celular (${canvas.width}x${canvas.height}px). Use as ferramentas de edição abaixo!`;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    // DOWNLOAD DIRETO DA IMAGEM NA MEMÓRIA DO CELULAR (COM AS EDIÇÕES APLICADAS)
+    window.baixarImagemNoCelular = async function() {
+      const canvas = document.getElementById('studio-canvas');
+      const nomeArquivo = 'core_ai_arte_' + Date.now() + '.png';
+
+      try {
+        canvas.toBlob((blob) => {
+          if (!blob) throw new Error('Falha Blob');
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = nomeArquivo;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(url), 3000);
+          speakText('Download da imagem concluído na memória do seu celular.');
+        }, 'image/png', 1.0);
+      } catch (err) {
+        // Fallback via fetch do src original caso o Canvas tenha restrição CORS
+        if (currentStudioImage && currentStudioImage.src) {
+          await baixarUrlDireto(currentStudioImage.src, nomeArquivo);
+        }
+      }
+    };
+
+    window.baixarUrlDireto = async function(imgUrl, filename) {
+      try {
+        speakText('Baixando imagem na memória do celular...');
+        const res = await fetch(imgUrl);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename || ('core_ai_' + Date.now() + '.png');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+      } catch (e) {
+        window.open(imgUrl, '_blank');
+      }
+    };
+
+    // GERADOR DE VÍDEO / EPISÓDIO ANIMADO COM MÚLTIPLAS CENAS E GRAVAÇÃO .WEBM
+    window.iniciarEpisodioAnimado = async function() {
+      if (episodeInterval) { clearInterval(episodeInterval); episodeInterval = null; }
+      const baseTheme = document.getElementById('anime-prompt').value.trim() || 'Guerreiro alto de cabelos pretos em floresta mágica';
+      const totalCenas = parseInt(document.getElementById('video-scenes-count').value) || 5;
+      const scriptBox = document.getElementById('scene-script-box');
+      const canvas = document.getElementById('studio-canvas');
+      canvas.classList.add('ken-burns-active');
+
+      scriptBox.innerText = `🎬 Criando roteiro visual de ${totalCenas} cenas para o seu vídeo...`;
+      speakText(`Iniciando produção do vídeo com ${totalCenas} cenas.`);
+
+      let cenas = [];
+      try {
+        const promptCenas = `Divida a seguinte ideia em exatamente ${totalCenas} cenas curtas e sequenciais para uma animação. Retorne APENAS uma linha por cena em português, descrevendo o visual e a narração. Ideia: ${baseTheme}`;
+        const resp = await callCoreAI('Você é um diretor de animação.', promptCenas);
+        cenas = resp.split('\n').map(l => l.replace(/^\d+[\.\)\-\s]*/, '').trim()).filter(l => l.length > 5).slice(0, totalCenas);
+      } catch (e) {}
+
+      if (cenas.length === 0) {
+        cenas = [
+          `${baseTheme}, plano aberto cinematográfico na floresta iluminada`,
+          `${baseTheme}, close-up no rosto determinado do guerreiro e seus olhos brilhando`,
+          `${baseTheme}, energia vital dourada despertando ao redor de sua espada`,
+          `${baseTheme}, árvores gigantes reagindo ao poder mágico supremo`
+        ];
+      }
+
+      const { w, h } = obterDimensoesEscolhidas();
+      const estilo = document.getElementById('img-style').value;
+
+      for (let i = 0; i < cenas.length; i++) {
+        const cenaAtual = cenas[i];
+        scriptBox.innerText = `🎬 Cena ${i + 1} de ${cenas.length}:\n${cenaAtual}`;
+        const promptIngles = await otimizarPromptVisual(cenaAtual, estilo);
+        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptIngles)}?width=${w}&height=${h}&nologo=true&seed=${Math.floor(Math.random()*99999)}`;
+        await carregarImagemNoCanvas(url, cenaAtual, w, h);
+        speakText(cenaAtual);
+        await new Promise(r => setTimeout(r, 6500));
+      }
+
+      scriptBox.innerText += `\n\n✅ Vídeo de ${cenas.length} cenas concluído! Você pode clicar em "🎥 Baixar em Vídeo (.WEBM)" para gravar e salvar no celular.`;
+    };
+
+    // GRAVADOR DE VÍDEO REAL DO CANVAS (.WEBM DIRETO PARA A MEMÓRIA DO CELULAR)
+    window.gravarEBaixarVideo = async function() {
+      const canvas = document.getElementById('studio-canvas');
+      if (!canvas.captureStream || typeof MediaRecorder === 'undefined') {
+        alert('Seu navegador WebView atual suporta download direto em PNG. Baixando imagem em alta resolução!');
+        baixarImagemNoCelular();
+        return;
+      }
+
+      const btn = document.getElementById('btn-rec-video');
+      btn.innerText = '🔴 Gravando Vídeo (6s)...';
+      btn.disabled = true;
+      speakText('Gravando animação em vídeo para salvar no seu celular.');
+
+      const stream = canvas.captureStream(30);
+      const chunks = [];
+      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'core_ai_video_' + Date.now() + '.webm';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        btn.innerText = '🎥 Baixar em Vídeo (.WEBM)';
+        btn.disabled = false;
+        speakText('Vídeo salvo na memória do seu celular com sucesso!');
+      };
+
+      recorder.start();
+
+      // Aplica um leve movimento cinematográfico de zoom no canvas durante os 6 segundos de gravação
+      let frame = 0;
+      const origZoom = parseInt(document.getElementById('edit-zoom').value) || 100;
+      const animTimer = setInterval(() => {
+        frame++;
+        document.getElementById('edit-zoom').value = origZoom + Math.sin(frame * 0.05) * 12;
+        aplicarEdicoesCanvas();
+      }, 33);
+
+      setTimeout(() => {
+        clearInterval(animTimer);
+        document.getElementById('edit-zoom').value = origZoom;
+        aplicarEdicoesCanvas();
+        recorder.stop();
+      }, 6000);
+    };
+
+    // Gerar Roteiro Completo Separado e Fácil de Copiar
+    window.gerarRoteiroSeparado = async function() {
+      const theme = document.getElementById('anime-prompt').value.trim() || 'Guerreiro em floresta mágica';
+      const scriptBox = document.getElementById('scene-script-box');
+      scriptBox.innerText = '⏳ Escrevendo roteiro completo aqui mesmo (sem tampar a imagem)...';
+      const resp = await callCoreAI(
+        'Você é um roteirista profissional de anime e cinema. Escreva um roteiro rico, detalhado e emocionante em português.',
+        `Crie um roteiro detalhado sobre: ${theme}`
+      );
+      scriptBox.innerText = resp;
+      speakText('Roteiro completo gerado abaixo da imagem. Você pode clicar em Copiar Roteiro.');
+    };
+
+    window.copiarTextoRoteiro = function() {
+      const texto = document.getElementById('scene-script-box').innerText;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(texto);
+      } else {
+        const temp = document.createElement('textarea');
+        temp.value = texto;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+      }
+      speakText('Texto copiado para a área de transferência!');
+    };
+
+    window.copiarMensagemChat = function(btn) {
+      const msgDiv = btn.closest('.msg');
+      const clone = msgDiv.cloneNode(true);
+      const actions = clone.querySelector('.msg-actions');
+      if (actions) actions.remove();
+      const texto = clone.innerText.trim();
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(texto);
+      } else {
+        const temp = document.createElement('textarea');
+        temp.value = texto;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+      }
+      btn.innerText = '✅ Copiado!';
+      setTimeout(() => { btn.innerText = '📋 Copiar Texto'; }, 2000);
+    };
+
+    // Modo 2º Plano
     window.toggleBackgroundMode = async function() {
       bgModeActive = !bgModeActive;
       const btn = document.getElementById('bg-toggle');
@@ -532,7 +1084,6 @@
         try {
           if ('wakeLock' in navigator) await navigator.wakeLock.request('screen');
         } catch (e) {}
-        // Cria um canal de áudio inaudível para manter a WebView viva em segundo plano
         if (!bgAudioLoop) {
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
           const ctx = new AudioCtx();
@@ -544,7 +1095,7 @@
           osc.start();
           bgAudioLoop = ctx;
         }
-        speakText('Modo segundo plano ativado. Permanecerei conectada com você.');
+        speakText('Modo segundo plano ativado.');
       } else {
         btn.innerText = '⚡ 2º Plano: OFF';
         btn.style.borderColor = '';
@@ -552,7 +1103,6 @@
       }
     };
 
-    // Esfera Modo Live
     window.toggleLiveOrb = function() {
       const orb = document.getElementById('live-orb-container');
       orb.classList.toggle('active');
@@ -561,7 +1111,6 @@
       }
     };
 
-    // Carregar Print da Tela / Foto para a IA analisar
     window.loadVisionImage = function(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -569,8 +1118,8 @@
       reader.onload = (e) => {
         document.getElementById('vision-img').src = e.target.result;
         document.getElementById('vision-preview').style.display = 'flex';
-        visionDescription = `[O criador Nichollas anexou uma imagem/captura de tela chamada "${file.name}" para análise visual]. `;
-        speakText('Imagem carregada. O que você quer que eu analise nela?');
+        visionDescription = `[O criador Nichollas anexou uma imagem chamada "${file.name}"]. `;
+        speakText('Imagem carregada.');
       };
       reader.readAsDataURL(file);
     };
@@ -580,7 +1129,6 @@
       visionDescription = '';
     };
 
-    // Links Externos
     window.abrirLinkExterno = function(url) {
       document.getElementById('dropdown-menu').classList.remove('show');
       const win = window.open(url, '_blank');
@@ -603,12 +1151,14 @@
       const box = document.getElementById('chat-box');
       const div = document.createElement('div');
       div.className = 'msg ' + sender;
+      if (sender === 'ai') {
+        htmlText += `<div class="msg-actions"><button class="icon-btn" onclick="copiarMensagemChat(this)">📋 Copiar Texto</button></div>`;
+      }
       div.innerHTML = htmlText;
       box.appendChild(div);
       box.scrollTop = box.scrollHeight;
     }
 
-    // Auto-Aprendizado: Salva fatos novos automaticamente na memória interna
     function autoLearnFromUser(text) {
       if (/lembre|aprenda|guarde|meu nome|eu gosto|eu quero que você seja|regra:/i.test(text)) {
         const nota = `\n[Aprendido em ${new Date().toLocaleDateString()}]: ${text}`;
@@ -620,7 +1170,6 @@
       }
     }
 
-    // Chamada de IA Robusta via POST (Sem limite de tamanho e sem bloqueio de código)
     async function callCoreAI(systemPrompt, userMessage) {
       const messages = [
         { role: 'system', content: systemPrompt },
@@ -641,14 +1190,13 @@
         if (!response.ok) throw new Error('Falha POST');
         return await response.text();
       } catch (err) {
-        // Fallback GET caso a rede oscile
         const promptUrl = encodeURIComponent(`${systemPrompt}\n\nUsuário: ${userMessage}`);
         const res = await fetch(`https://text.pollinations.ai/${promptUrl}?model=openai`);
         return await res.text();
       }
     }
 
-    // Enviar Mensagem no Chat
+    // Enviar Mensagem no Chat (Detecta pedidos de Imagem, Jogo ou Conversa/Roteiro)
     window.sendMessage = async function() {
       const input = document.getElementById('user-input');
       const text = input.value.trim();
@@ -660,19 +1208,40 @@
 
       const lower = text.toLowerCase();
 
-      // Se pedir para criar jogo direto no chat, já abre o compilador e gera o código
+      // 1. Se pedir para criar JOGO
       if (/(crie|criar|faça|fazer|gere|gerar|montar|programe)\s+(um\s+)?jogo/i.test(lower)) {
-        appendMsg('ai', `🎮 <strong>Com certeza, Nichollas!</strong> Estou programando o código completo do seu jogo (<em>${text}</em>) e abrindo no Estúdio de Jogos...`);
-        speakText('Com certeza Nichollas! Programando o seu jogo agora mesmo.');
+        appendMsg('ai', `🎮 <strong>Com certeza, Nichollas!</strong> Estou programando o código completo do seu jogo e abrindo no Estúdio de Jogos...`);
+        speakText('Programando o seu jogo agora mesmo.');
         document.getElementById('game-prompt').value = text;
         selectMenuTab('compiler');
         gerarJogoPorIA();
         return;
       }
 
+      // 2. Se pedir para gerar IMAGEM, FOTO, CENA ou DESENHO direto no Chat
+      if (/(gere|gerar|crie|criar|faça|fazer|desenhe|renderize|mostre)\s+(uma\s+|a\s+)?(imagem|foto|cena|arte|ilustração|desenho)/i.test(lower) || lower.startsWith('homem guerreiro') || lower.startsWith('imagem de')) {
+        appendMsg('ai', `🎨 <em>Renderizando a sua imagem em alta definição diretamente aqui no chat e no Estúdio...</em>`);
+        speakText('Renderizando a sua imagem agora mesmo.');
+
+        const promptIngles = await otimizarPromptVisual(text, 'anime masterpiece, ultra detailed, cinematic lighting, 8k');
+        const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptIngles)}?width=1280&height=720&nologo=true&enhance=true&seed=${Math.floor(Math.random()*999999)}`;
+
+        const imgHtml = `
+          <div>🖼️ <strong>Imagem gerada para você:</strong></div>
+          <img src="${imgUrl}" class="chat-gen-img" alt="Imagem Gerada" />
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+            <button class="btn btn-success" onclick="baixarUrlDireto('${imgUrl}', 'core_ai_chat_${Date.now()}.png')">📥 Baixar Imagem na Memória</button>
+            <button class="btn btn-primary" onclick="abrirImagemNoEstudio('${encodeURIComponent(text)}', '${imgUrl}')">🛠️ Editar no Estúdio</button>
+          </div>
+        `;
+        appendMsg('ai', imgHtml);
+        return;
+      }
+
+      // 3. Conversa normal, código ou roteiro (também gera uma imagem ilustrativa se for descrição de personagem/cena)
       appendMsg('ai', '✨ <em>Processando e gerando resposta completa...</em>');
 
-      const sysPrompt = `${aiMemory}\nVocê é a Core AI pessoal de Nichollas. Responda sempre em português do Brasil. NUNCA dê desculpas dizendo que não pode fazer algo e NUNCA mande o usuário pesquisar no Google: se ele pedir um código, script, servidor, site ou jogo, escreva o código completo e funcional diretamente na resposta.`;
+      const sysPrompt = `${aiMemory}\nVocê é a Core AI pessoal de Nichollas. Responda sempre em português do Brasil. NUNCA dê desculpas dizendo que não pode fazer algo.`;
 
       try {
         const fullQuery = visionDescription + text;
@@ -683,7 +1252,6 @@
         chatHistory.push({ role: 'assistant', content: reply });
         localStorage.setItem('core_ai_chat_history', JSON.stringify(chatHistory.slice(-12)));
 
-        // Se a resposta contiver código HTML completo, oferece botão para rodar direto no Estúdio de Jogos
         let extraBtn = '';
         if (reply.includes('<!DOCTYPE html>') || reply.includes('<canvas')) {
           extraBtn = `<br><button class="btn btn-primary" style="margin-top:8px;" onclick="enviarCodigoDoChatParaCompilador(this)">▶️ Testar este Código no Estúdio</button>`;
@@ -701,8 +1269,15 @@
       }
     };
 
+    window.abrirImagemNoEstudio = function(encodedPrompt, imgUrl) {
+      const promptDecodificado = decodeURIComponent(encodedPrompt);
+      document.getElementById('anime-prompt').value = promptDecodificado;
+      selectMenuTab('anime');
+      carregarImagemNoCanvas(imgUrl, promptDecodificado, 1280, 720);
+    };
+
     window.enviarCodigoDoChatParaCompilador = function(btn) {
-      const pre = btn.parentElement.querySelector('pre');
+      const pre = btn.closest('.msg').querySelector('pre');
       if (pre) {
         document.getElementById('code-editor').value = pre.innerText;
         selectMenuTab('compiler');
@@ -710,11 +1285,11 @@
       }
     };
 
-    // CRIADOR DE JOGOS POR IA (AGORA FUNCIONA COM QUALQUER DESCRIÇÃO E ESCREVE O CÓDIGO SOZINHA)
+    // CRIADOR DE JOGOS POR IA
     window.gerarJogoPorIA = async function() {
       const desc = document.getElementById('game-prompt').value.trim();
       if (!desc) {
-        alert('Digite acima como você quer o jogo! Ex: Jogo de tiro espacial, RPG de espada, corrida, etc.');
+        alert('Digite acima como você quer o jogo!');
         return;
       }
 
@@ -722,33 +1297,27 @@
       btn.innerText = '⏳ Programando Jogo...';
       btn.disabled = true;
 
-      speakText('Escrevendo o código-fonte do seu jogo. Aguarde alguns instantes.');
+      speakText('Escrevendo o código-fonte do seu jogo.');
       const editor = document.getElementById('code-editor');
       editor.value = '<!-- A Core AI está escrevendo todo o código HTML5 + JavaScript do seu jogo... -->';
 
       const gameSystemPrompt = `Você é um motor especialista em desenvolvimento de jogos HTML5 Canvas para celular Android.
 O usuário pediu: "${desc}".
-Programe um jogo 2D COMPLETO, INTERATIVO, BONITO e 100% FUNCIONAL em um único arquivo HTML5.
-REGRAS OBRIGATÓRIAS:
-1. Inclua controles touch na tela (botões visuais ou toque/arraste direto no canvas) para funcionar perfeitamente no celular.
-2. Inclua física, colisão, placar de pontos/recursos, inimigos com IA, animações e botão de reiniciar.
-3. Retorne SOMENTE o código HTML puro começando exatamente com <!DOCTYPE html> e terminando com </html>. Não escreva nenhuma explicação fora do código.`;
+Programe um jogo 2D COMPLETO, INTERATIVO, BONITO e 100% FUNCIONAL em um único arquivo HTML5 com controles Touch.
+Retorne SOMENTE o código HTML puro começando com <!DOCTYPE html> e terminando com </html>.`;
 
       try {
         let code = await callCoreAI(gameSystemPrompt, `Crie o código completo do jogo: ${desc}`);
-        // Extrai apenas o HTML caso venha com blocos markdown
         const match = code.match(/<!DOCTYPE html>[\s\S]*<\/html>/i);
         if (match) {
           code = match[0];
         } else {
           code = code.replace(/```html/gi, '').replace(/```/g, '').trim();
         }
-
         editor.value = code;
         runCompiler();
-        speakText('Pronto, Nichollas! O código foi escrito e o seu jogo já está rodando para teste.');
+        speakText('Pronto, Nichollas! Seu jogo já está rodando.');
       } catch (e) {
-        speakText('Carregando motor Age of Empires completo.');
         carregarAgeOfEmpiresRTS();
       } finally {
         btn.innerText = '🤖 Criar Jogo com IA';
@@ -756,22 +1325,17 @@ REGRAS OBRIGATÓRIAS:
       }
     };
 
-    // Botão para Baixar o Jogo Pronto no Celular (.html jogável offline)
     window.baixarJogoHTML = function() {
       const code = document.getElementById('code-editor').value;
-      if (!code.trim()) {
-        alert('Crie ou carregue um jogo primeiro para baixar!');
-        return;
-      }
+      if (!code.trim()) return;
       const blob = new Blob([code], { type: 'text/html' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = 'meu_jogo_core_ai.html';
       a.click();
-      speakText('Download do jogo iniciado! Você pode abrir esse arquivo a qualquer momento até offline.');
+      speakText('Download do jogo iniciado!');
     };
 
-    // Motor RTS Age of Empires Aprimorado (Com Câmera Arrastável, Mapa Grande, Bonecos Detalhados e Construções)
     window.carregarAgeOfEmpiresRTS = function() {
       const rtsCode = `<!DOCTYPE html>
 <html>
@@ -795,7 +1359,7 @@ REGRAS OBRIGATÓRIAS:
       <span>🪙<span id="gold">150</span></span>
       <span>👥<span id="pop">3</span></span>
     </div>
-    <div id="era-txt" style="color:#f6e05e; font-weight:bold;">🏛️ Era Feudal</div>
+    <div style="color:#f6e05e; font-weight:bold;">🏛️ Era Feudal</div>
   </div>
   <canvas id="game"></canvas>
   <div id="controls">
@@ -860,7 +1424,6 @@ REGRAS OBRIGATÓRIAS:
 
   window.orderAttack = () => { rallyX = enemyBase.x; rallyY = enemyBase.y; };
 
-  // Controle de Câmera e Comando por Toque
   let dragging = false, startX = 0, startY = 0, moved = false;
   canvas.addEventListener('pointerdown', e => { dragging = true; moved = false; startX = e.clientX; startY = e.clientY; });
   canvas.addEventListener('pointermove', e => {
@@ -1026,27 +1589,6 @@ REGRAS OBRIGATÓRIAS:
       document.getElementById('preview-frame').srcdoc = code;
     };
 
-    // Estúdio de Anime e Gerador de Roteiro Longo
-    window.startAnimeEpisode = function() {
-      const theme = document.getElementById('anime-prompt').value.trim() || 'Guerreiro Isekai despertando magia suprema';
-      const img = document.getElementById('anime-img');
-      const sub = document.getElementById('anime-subtitle');
-      sub.innerText = 'Renderizando cena: ' + theme + '...';
-      img.style.display = 'block';
-      img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent('anime masterpiece scene, ' + theme)}?width=640&height=360&nologo=true&seed=${Math.floor(Math.random()*999)}`;
-      img.onload = () => {
-        sub.innerText = '🎬 ' + theme;
-        speakText('Cena renderizada: ' + theme);
-      };
-    };
-
-    window.gerarRoteiroLongo = async function() {
-      const theme = document.getElementById('anime-prompt').value.trim() || 'Guerreiro Isekai despertando magia de criação';
-      selectMenuTab('chat');
-      document.getElementById('user-input').value = `Crie um roteiro completo, detalhado ato por ato, com diálogos, cenas de ação e trilha sonora para um episódio especial sobre: ${theme}`;
-      sendMessage();
-    };
-
     // Voz Sintetizada
     window.toggleVoiceOutput = function() {
       voiceEnabled = !voiceEnabled;
@@ -1116,7 +1658,7 @@ REGRAS OBRIGATÓRIAS:
       try { recognition.start(); } catch (e) { recognition.stop(); }
     };
 
-    // Memória Evolutiva Interna + Injeção de Biblioteca de Programação de Jogos
+    // Memória Evolutiva Interna
     window.saveMemory = function() {
       aiMemory = document.getElementById('memory-notes').value;
       localStorage.setItem('core_ai_m31_memory', aiMemory);
@@ -1125,15 +1667,15 @@ REGRAS OBRIGATÓRIAS:
     };
 
     window.carregarBibliotecaJogos = function() {
-      const lib = `\n[BIBLIOTECA MESTRE DE ENGENHARIA DE JOGOS E CÓDIGO]:
+      const lib = `\n[BIBLIOTECA MESTRE DE ENGENHARIA VISUAL, JOGOS E CÓDIGO]:
 - Sempre programar jogos completos em HTML5 Canvas + JS com requestAnimationFrame, sistema de partículas, física vetorial, colisão AABB/circular, HUD responsiva e controles Mobile Touch.
-- Nunca entregar código pela metade ou mandar o criador Nichollas procurar no Google.`;
+- Gerar artes, cenas de anime e vídeos em alta resolução sem sobrepor o roteiro na imagem.`;
       if (!aiMemory.includes('BIBLIOTECA MESTRE')) {
         aiMemory += lib;
         document.getElementById('memory-notes').value = aiMemory;
         localStorage.setItem('core_ai_m31_memory', aiMemory);
       }
-      speakText('Biblioteca de programação de jogos injetada na memória interna!');
+      speakText('Biblioteca injetada na memória interna!');
     };
 
     window.exportMemorySD = function() {
@@ -1160,7 +1702,7 @@ REGRAS OBRIGATÓRIAS:
         localStorage.setItem('core_ai_m31_memory', aiMemory);
         speakText('Backup de memória restaurado com sucesso.');
       };
-      reader.readAsDataURL ? reader.readAsText(file) : null;
+      reader.readAsText(file);
     };
   </script>
 </body>
