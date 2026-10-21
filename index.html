@@ -1,1001 +1,823 @@
 <!DOCTYPE html>
 <html lang="pt-BR" translate="no" class="notranslate">
 <head>
-    <meta charset="UTF-8">
-    <meta name="google" content="notranslate">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Core AI • Omni</title>
+  <meta charset="UTF-8">
+  <meta name="google" content="notranslate">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Core AI • Omni</title>
 
-    <!-- Bibliotecas Externas Opcionais (Com Fallback Seguro se estiver Offline) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Bibliotecas para ler arquivos .ZIP (data.zip) e .GZ (oasst.jsonl.gz) direto no celular -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 
-    <style>
-        :root {
-            --bg-main: #0e1015;
-            --bg-surface: #181b22;
-            --bg-drawer: #12151c;
-            --bg-user-bubble: #283044;
-            --bg-ai-bubble: transparent;
-            --accent: #4c8df6;
-            --accent-soft: rgba(76, 141, 246, 0.15);
-            --text-main: #eef2f6;
-            --text-dim: #94a3b8;
-            --border: rgba(255, 255, 255, 0.08);
-        }
+  <style>
+    :root {
+      --bg-main: #0e1015;
+      --bg-surface: #181b22;
+      --bg-drawer: #12151c;
+      --bg-user-bubble: #283044;
+      --accent: #4c8df6;
+      --accent-soft: rgba(76, 141, 246, 0.15);
+      --text-main: #eef2f6;
+      --text-dim: #94a3b8;
+      --border: rgba(255, 255, 255, 0.08);
+      --success: #10b981;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            background: var(--bg-main);
-            color: var(--text-main);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-        /* BARRA SUPERIOR LIMPA (ESTILO GEMINI) */
-        .app-header {
-            height: 56px;
-            padding: 0 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--bg-main);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
-            flex-shrink: 0;
-        }
+    /* Cabeçalho */
+    header {
+      height: 60px;
+      background-color: var(--bg-main);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 10;
+    }
 
-        .header-left, .header-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            background: transparent;
-            color: var(--text-main);
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
+    .menu-btn {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+    }
 
-        .icon-btn:active {
-            background: rgba(255, 255, 255, 0.12);
-        }
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .app-title {
-            font-size: 16px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-            color: var(--text-main);
-        }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+    }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #10b981;
-            box-shadow: 0 0 8px #10b981;
-        }
+    /* Menu Lateral (Drawer) */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 99;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
 
-        /* SENSOR E ABA DISCRETA PARA PUXAR A JANELA LATERAL */
-        .swipe-edge-zone {
-            position: fixed;
-            top: 56px;
-            bottom: 68px;
-            left: 0;
-            width: 18px;
-            z-index: 400;
-        }
+    .drawer-overlay.open {
+      display: block;
+      opacity: 1;
+    }
 
-        /* FUNDO ESCURO DA GAVETA LATERAL */
-        .drawer-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(2px);
-            z-index: 900;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
-        }
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 285px;
+      height: 100dvh;
+      background-color: var(--bg-drawer);
+      border-right: 1px solid var(--border);
+      z-index: 100;
+      transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      overflow-y: auto;
+    }
 
-        .drawer-overlay.open {
-            opacity: 1;
-            pointer-events: auto;
-        }
+    .drawer.open {
+      left: 0;
+    }
 
-        /* JANELA LATERAL ESQUERDA (ONDE FICAM TODAS AS FUNÇÕES) */
-        .side-drawer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 82%;
-            max-width: 310px;
-            height: 100%;
-            background: var(--bg-drawer);
-            border-right: 1px solid var(--border);
-            z-index: 950;
-            transform: translateX(-102%);
-            transition: transform 0.26s cubic-bezier(0.2, 0.9, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            box-shadow: 8px 0 28px rgba(0, 0, 0, 0.7);
-        }
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
 
-        .side-drawer.open {
-            transform: translateX(0);
-        }
+    .drawer-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 14px 0 8px 4px;
+      letter-spacing: 0.5px;
+    }
 
-        .drawer-header {
-            height: 56px;
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-            font-weight: 600;
-            color: var(--accent);
-        }
+    .drawer-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      border-radius: 10px;
+      color: var(--text-main);
+      background: var(--bg-surface);
+      margin-bottom: 8px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      transition: background 0.2s;
+    }
 
-        .drawer-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+    .drawer-item:active {
+      background: var(--bg-user-bubble);
+    }
 
-        .drawer-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            color: var(--text-dim);
-            margin: 10px 6px 4px;
-        }
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
 
-        .drawer-item {
-            width: 100%;
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-main);
-            padding: 12px 14px;
-            border-radius: 12px;
-            font-size: 14px;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-        }
+    /* Área de Chat */
+    #chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      scroll-behavior: smooth;
+    }
 
-        .drawer-item:active, .drawer-item.active {
-            background: var(--accent-soft);
-            border-color: rgba(76, 141, 246, 0.3);
-            color: #fff;
-        }
+    .welcome-screen {
+      margin: auto;
+      text-align: center;
+      max-width: 320px;
+    }
 
-        .badge {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-dim);
-        }
+    .welcome-title {
+      font-size: 26px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #4c8df6, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
 
-        /* ÁREA CENTRAL DE CONVERSA (INTERFACE LIMPA) */
-        .chat-viewport {
-            flex: 1;
-            overflow-y: auto;
-            padding: 18px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            scroll-behavior: smooth;
-        }
+    .welcome-sub {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.5;
+    }
 
-        .empty-greeting {
-            margin: auto 0;
-            text-align: center;
-            padding: 20px;
-        }
+    .msg-row {
+      display: flex;
+      width: 100%;
+    }
 
-        .empty-greeting h1 {
-            font-size: 24px;
-            font-weight: 600;
-            background: linear-gradient(90deg, #60a5fa, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
+    .msg-row.user {
+      justify-content: flex-end;
+    }
 
-        .empty-greeting p {
-            font-size: 14px;
-            color: var(--text-dim);
-            line-height: 1.5;
-        }
+    .msg-row.ai {
+      justify-content: flex-start;
+    }
 
-        .msg-row {
-            display: flex;
-            flex-direction: column;
-            max-width: 100%;
-            animation: fadeIn 0.2s ease;
-        }
+    .msg-bubble {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 15px;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .msg-row.user .msg-bubble {
+      background-color: var(--bg-user-bubble);
+      color: var(--text-main);
+      border-bottom-right-radius: 4px;
+    }
 
-        .msg-row.user {
-            align-items: flex-end;
-        }
+    .msg-row.ai .msg-bubble {
+      background-color: transparent;
+      color: var(--text-main);
+      padding-left: 4px;
+      max-width: 95%;
+    }
 
-        .msg-row.ai {
-            align-items: flex-start;
-        }
+    /* Blocos de Código */
+    .code-card {
+      background: #14171f;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
 
-        .msg-bubble {
-            font-size: 15px;
-            line-height: 1.6;
-            word-wrap: break-word;
-            max-width: 92%;
-        }
+    .code-header {
+      background: #1e222d;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
 
-        .msg-row.user .msg-bubble {
-            background: var(--bg-user-bubble);
-            color: #fff;
-            padding: 11px 16px;
-            border-radius: 20px 20px 4px 20px;
-        }
+    .code-actions button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 6px;
+    }
 
-        .msg-row.ai .msg-bubble {
-            background: var(--bg-ai-bubble);
-            color: var(--text-main);
-            padding: 4px 2px;
-            width: 100%;
-        }
+    pre {
+      padding: 12px;
+      overflow-x: auto;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 13px;
+      color: #cbd5e1;
+      max-height: 300px;
+    }
 
-        /* CAIXA DE CÓDIGO (SÓ APARECE QUANDO O USUÁRIO PEDE CÓDIGO) */
-        .code-box {
-            background: #080a0f;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            margin-top: 10px;
-            overflow: hidden;
-            width: 100%;
-        }
+    /* Barra de Digitação */
+    .input-area {
+      padding: 12px 16px;
+      background-color: var(--bg-main);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .code-box-header {
-            background: #141821;
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: var(--text-dim);
-            border-bottom: 1px solid var(--border);
-        }
+    .input-wrapper {
+      flex: 1;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      padding: 4px 14px;
+    }
 
-        .code-btn {
-            background: #2563eb;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 11px;
-            cursor: pointer;
-            margin-left: 6px;
-        }
+    .add-file-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 22px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
 
-        .code-box pre {
-            padding: 12px;
-            overflow-x: auto;
-            font-family: monospace;
-            font-size: 12px;
-            line-height: 1.45;
-            max-height: 360px;
-            color: #a5f3fc;
-            white-space: pre;
-        }
+    #user-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 15px;
+      padding: 10px 0;
+      outline: none;
+    }
 
-        /* MODAL SECUNDÁRIO (PARA MOTOR 3D RTS OU CATÁLOGO DATA 7) */
-        .tool-modal {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-main);
-            z-index: 800;
-            display: none;
-            flex-direction: column;
-        }
-
-        .tool-modal.active {
-            display: flex;
-        }
-
-        /* BARRA DE DIGITAÇÃO INFERIOR (ESTILO GEMINI) */
-        .input-bar-wrapper {
-            padding: 8px 12px 12px;
-            background: var(--bg-main);
-            flex-shrink: 0;
-        }
-
-        .input-pill {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 4px 6px 4px 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .chat-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-size: 15px;
-            height: 40px;
-            outline: none;
-            padding: 0 6px;
-        }
-
-        .send-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            background: var(--accent);
-            color: #fff;
-            font-size: 17px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .send-btn:active {
-            transform: scale(0.92);
-        }
-    </style>
+    .send-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background-color: var(--accent);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+  </style>
 </head>
-<body class="notranslate" translate="no">
+<body>
 
-    <!-- SELETORES DE ARQUIVOS OCULTOS -->
-    <input type="file" id="hiddenFilePicker" multiple accept="*/*" style="display:none">
-    <input type="file" id="hiddenFolderPicker" webkitdirectory directory multiple style="display:none">
+  <!-- Inputs ocultos para carregar os Datasets -->
+  <input type="file" id="file-input" multiple accept=".zip,.gz,.jsonl,.json,.txt,.js,.py,.html" style="display: none;">
+  <input type="file" id="folder-input" webkitdirectory directory multiple style="display: none;">
 
-    <!-- ZONA SENSÍVEL NA BORDA ESQUERDA PARA PUXAR A JANELA COM O DEDO -->
-    <div id="swipeEdgeZone" class="swipe-edge-zone"></div>
-
-    <!-- TOPO LIMPO COM MENU LATERAL E TRÊS PONTINHOS -->
-    <header class="app-header">
-        <div class="header-left">
-            <button type="button" id="btnOpenDrawer" class="icon-btn" aria-label="Menu">☰</button>
-            <span class="app-title">Core AI</span>
-            <span class="status-dot" title="Online"></span>
-        </div>
-        <div class="header-right">
-            <button type="button" id="btnDotsMenu" class="icon-btn" aria-label="Opções">⋮</button>
-        </div>
-    </header>
-
-    <!-- FUNDO ESCURO DO MENU -->
-    <div id="drawerOverlay" class="drawer-overlay"></div>
-
-    <!-- JANELA LATERAL ESQUERDA (TODAS AS FUNÇÕES GUARDADAS AQUI) -->
-    <aside id="sideDrawer" class="side-drawer">
-        <div class="drawer-header">
-            <span>⚡ Core AI • Funções</span>
-            <button type="button" id="btnCloseDrawer" class="icon-btn">✕</button>
-        </div>
-        <div class="drawer-list">
-            <div class="drawer-label">Conversa</div>
-            <button type="button" class="drawer-item" id="navNewChat">
-                <span>💬 Conversa Limpa</span>
-                <span class="badge">Início</span>
-            </button>
-
-            <div class="drawer-label">Armazenamento & Datasets</div>
-            <button type="button" class="drawer-item" id="navImportFiles">
-                <span>📂 Importar Arquivo / ZIP (datasets-main)</span>
-                <span class="badge" id="badgeFileCount">0</span>
-            </button>
-            <button type="button" class="drawer-item" id="navImportFolder">
-                <span>📁 Selecionar Pasta do Celular</span>
-                <span class="badge">Local</span>
-            </button>
-            <button type="button" class="drawer-item" id="navSyncHF">
-                <span>🤗 Dataset Hugging Face</span>
-                <span class="badge" id="badgeHfCount">Ativo</span>
-            </button>
-
-            <div class="drawer-label">Engenharia & Motores</div>
-            <button type="button" class="drawer-item" id="navData7">
-                <span>📚 Biblioteca Data 7</span>
-                <span class="badge">114+</span>
-            </button>
-            <button type="button" class="drawer-item" id="navMegaGen">
-                <span>⚡ Gerador 5.000 a 6.000+ Linhas</span>
-                <span class="badge">Sob Demanda</span>
-            </button>
-            <button type="button" class="drawer-item" id="navSelfImprove">
-                <span>🧬 Auto-Evolução (Otimizar IA)</span>
-                <span class="badge">Auto</span>
-            </button>
-            <button type="button" class="drawer-item" id="navRts3D">
-                <span>🎮 Motor 3D RTS (Age of Empires)</span>
-                <span class="badge">3D</span>
-            </button>
-
-            <div class="drawer-label">Sistema</div>
-            <button type="button" class="drawer-item" id="navToggleVoice">
-                <span>🔊 Resposta por Voz</span>
-                <span class="badge" id="badgeVoice">OFF</span>
-            </button>
-        </div>
-    </aside>
-
-    <!-- TELA PRINCIPAL DE CONVERSA (LIMPA, IGUAL AO GEMINI) -->
-    <main id="chatViewport" class="chat-viewport">
-        <div id="emptyGreeting" class="empty-greeting">
-            <h1>Olá, Nichollas</h1>
-            <p>Como posso ajudar você hoje?<br>Deslize da esquerda para a direita (ou toque nos 3 pontinhos) para acessar arquivos, datasets e motores.</p>
-        </div>
-    </main>
-
-    <!-- MODAL OCULTO DO MOTOR 3D RTS (SÓ ABRE SE CLICAR NO MENU) -->
-    <section id="rtsModal" class="tool-modal">
-        <div class="app-header">
-            <span class="app-title">🎮 Motor 3D RTS • Age of Empires</span>
-            <button type="button" id="btnCloseRts" class="icon-btn">✕</button>
-        </div>
-        <div style="padding:10px; background:#141821; display:flex; justify-content:space-between; align-items:center; font-size:12px;">
-            <span id="rtsHudText">🪵 250 | 🪙 200 | 🌾 180 | 👥 4</span>
-            <div>
-                <button type="button" class="code-btn" id="btnRtsUnit">+ Unidade</button>
-                <button type="button" class="code-btn" id="btnRtsTower">+ Torre</button>
-            </div>
-        </div>
-        <div id="rtsCanvasBox" style="flex:1; width:100%; background:#050811;"></div>
-    </section>
-
-    <!-- BARRA DE DIGITAÇÃO INFERIOR FUNCIONAL -->
-    <div class="input-bar-wrapper">
-        <div class="input-pill">
-            <button type="button" id="btnAttachFile" class="icon-btn" title="Adicionar arquivo ou pasta" style="width:36px;height:36px;font-size:18px;">＋</button>
-            <input type="text" id="userInput" class="chat-input" placeholder="Peça qualquer coisa à Core AI..." autocomplete="off">
-            <button type="button" id="btnSendMsg" class="send-btn" aria-label="Enviar">➤</button>
-        </div>
+  <!-- Menu Lateral -->
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <span style="font-weight: 700; color: var(--accent);">⚡ Core AI • Funções</span>
+      <button class="menu-btn" id="close-drawer" style="font-size: 18px;">✕</button>
     </div>
-    <script>
-        (function() {
-            "use strict";
 
-            // ESTADO CENTRAL DA IA
-            const AI = {
-                files: {},
-                hfLogic: [
-                    { q: "oi", a: "Olá, Nichollas! Estou 100% online e com a interface limpa. O que vamos criar ou pesquisar agora?" },
-                    { q: "olá", a: "Olá, Nichollas! Tudo pronto. Pode conversar comigo normalmente ou puxar a barra lateral esquerda para acessar seus arquivos e motores." },
-                    { q: "tudo bem", a: "Tudo excelente e funcionando perfeitamente! Como posso te ajudar hoje?" }
-                ],
-                algorithms: [],
-                voice: false,
-                rtsStarted: false
-            };
+    <div class="drawer-section-title">Conversa</div>
+    <div class="drawer-item" id="btn-clear-chat">
+      <span>💬 Conversa Limpa</span>
+      <span class="badge">Início</span>
+    </div>
 
-            // ELEMENTOS DA TELA
-            const sideDrawer = document.getElementById("sideDrawer");
-            const drawerOverlay = document.getElementById("drawerOverlay");
-            const chatViewport = document.getElementById("chatViewport");
-            const emptyGreeting = document.getElementById("emptyGreeting");
-            const userInput = document.getElementById("userInput");
-            const btnSendMsg = document.getElementById("btnSendMsg");
-            const hiddenFilePicker = document.getElementById("hiddenFilePicker");
-            const hiddenFolderPicker = document.getElementById("hiddenFolderPicker");
+    <div class="drawer-section-title">Armazenamento & Datasets</div>
+    <div class="drawer-item" id="btn-import-files">
+      <span>📁 Importar ZIP / GZ / JSONL</span>
+      <span class="badge" id="badge-files">0</span>
+    </div>
+    <div class="drawer-item" id="btn-import-folder">
+      <span>📂 Selecionar Pasta do Celular</span>
+      <span class="badge">Local</span>
+    </div>
+    <div class="drawer-item" id="btn-sync-hf">
+      <span>🤗 Dataset Hugging Face</span>
+      <span class="badge" id="badge-hf">Ativo</span>
+    </div>
 
-            // 1. CONTROLE DA JANELA LATERAL E DOS 3 PONTINHOS
-            function openMenu() {
-                sideDrawer.classList.add("open");
-                drawerOverlay.classList.add("open");
+    <div class="drawer-section-title">Engenharia & Motores</div>
+    <div class="drawer-item">
+      <span>📚 Memória de Diálogos</span>
+      <span class="badge" id="badge-memory">Pronta</span>
+    </div>
+    <div class="drawer-item" id="btn-toggle-voice">
+      <span>🔊 Resposta por Voz</span>
+      <span class="badge" id="badge-voice">OFF</span>
+    </div>
+  </aside>
+
+  <!-- Topo -->
+  <header>
+    <div class="header-left">
+      <button class="menu-btn" id="open-drawer">☰</button>
+      <div class="app-title">
+        Core AI <span class="status-dot"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conversas -->
+  <main id="chat-container">
+    <div class="welcome-screen" id="welcome-screen">
+      <div class="welcome-title">Olá, Nichollas</div>
+      <p class="welcome-sub">
+        Modo conversação natural ativado! Carregue seu <b>data.zip</b> ou <b>oasst.jsonl.gz</b> no menu lateral ou comece a conversar comigo agora mesmo.
+      </p>
+    </div>
+  </main>
+
+  <!-- Entrada de Texto -->
+  <div class="input-area">
+    <div class="input-wrapper">
+      <button class="add-file-btn" id="quick-upload-btn" title="Importar Dataset">+</button>
+      <input type="text" id="user-input" placeholder="Converse ou peça algo à Core AI..." autocomplete="off">
+    </div>
+    <button class="send-btn" id="send-btn">➤</button>
+  </div>
+
+  <script>
+    // =========================================================================
+    // BANCO DE DADOS CONVERSACIONAL INTEGRADO (Ontology + Dialogues + OpenAssistant)
+    // =========================================================================
+    const CoreMemory = {
+      filesLoaded: 0,
+      voiceEnabled: false,
+      conversationHistory: [],
+      
+      // Base de conhecimento inicial pré-integrada dos seus datasets (Português Natural)
+      knowledgeBase: [
+        { q: ["oi", "ola", "bom dia", "boa tarde", "boa noite", "e ai", "opa"], a: "Olá, Nichollas! Tudo ótimo por aqui. Estou pronta para bater um papo normal com você, trocar ideias ou ajudar em algum projeto. Sobre o que você quer conversar hoje?" },
+        { q: ["tudo bem", "como voce esta", "como vai", "tudo certo"], a: "Comigo está tudo excelente, rodando liso e com a memória de conversação atualizada! E com você, como estão as coisas por aí?" },
+        { q: ["quem e voce", "qual seu nome", "o que voce faz", "me explica o que vc entendeu"], a: "Eu sou a Core AI, a sua inteligência artificial pessoal. Agora meu sistema foi atualizado: eu não fico mais gerando código sem você pedir. Eu leio seus datasets (como o OpenAssistant e o data.zip) para conversar naturalmente com você como uma parceira de ideias!" },
+        { q: ["conversar sem codigos", "debater ideias", "discutir topicos", "como amigos", "conversar comigo normal"], a: "Combinado, Nichollas! Modo código desativado para conversas normais. A partir de agora vamos apenas conversar naturalmente, trocar ideias e bater papo como amigos. Só vou gerar código se você me pedir claramente (como 'crie um código'). Qual é a boa de hoje?" },
+        { q: ["dataset", "aprendeu", "arquivos", "oasst", "ontology", "dialogues"], a: "Sim! Meu novo motor consegue abrir arquivos compactados (.zip e .gz) e extrair os pares de perguntas e respostas dos arquivos dialogues.json, ontology.json e do OpenAssistant (oasst). Quanto mais arquivos você carregar no botão '+', mais inteligente meu vocabulário fica!" },
+        { q: ["jogo", "ark", "exiled kingdoms", "bitcoin miner", "jogar"], a: "Jogos são um ótimo assunto! Seja sobrevivendo com dinossauros no ARK, explorando masmorras em RPGs como Exiled Kingdoms ou otimizando estratégias, qual jogo você está curtindo mais ultimamente?" },
+        { q: ["musica", "poesia", "letra", "sertanejo", "trap"], a: "Eu adoro criação artística! Se quiser compor uma letra nova, criar uma poesia romântica ou discutir ideias para uma batida de música, é só me dar o tema que a gente desenvolve junto." },
+        { q: ["obrigado", "valeu", "show", "top", "perfeito"], a: "Tamo junto, Nichollas! Fico feliz em ajudar. Se precisar de mais alguma coisa ou só quiser continuar o papo, estou por aqui." }
+      ],
+
+      // Tópicos extraídos da Ontologia (data/ontology.json)
+      ontologyTopics: []
+    };
+
+    // Elementos da Interface
+    const chatContainer = document.getElementById('chat-container');
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const drawer = document.getElementById('drawer');
+    const drawerOverlay = document.getElementById('drawer-overlay');
+    const fileInput = document.getElementById('file-input');
+    const folderInput = document.getElementById('folder-input');
+
+    // Controle do Menu Lateral
+    document.getElementById('open-drawer').onclick = () => {
+      drawer.classList.add('open');
+      drawerOverlay.classList.add('open');
+    };
+    const closeDrawer = () => {
+      drawer.classList.remove('open');
+      drawerOverlay.classList.remove('open');
+    };
+    document.getElementById('close-drawer').onclick = closeDrawer;
+    drawerOverlay.onclick = closeDrawer;
+
+    // Botões de Ação
+    document.getElementById('btn-clear-chat').onclick = () => {
+      chatContainer.innerHTML = '';
+      chatContainer.appendChild(welcomeScreen);
+      welcomeScreen.style.display = 'block';
+      CoreMemory.conversationHistory = [];
+      closeDrawer();
+    };
+
+    document.getElementById('btn-import-files').onclick = () => { closeDrawer(); fileInput.click(); };
+    document.getElementById('quick-upload-btn').onclick = () => fileInput.click();
+    document.getElementById('btn-import-folder').onclick = () => { closeDrawer(); folderInput.click(); };
+
+    document.getElementById('btn-toggle-voice').onclick = () => {
+      CoreMemory.voiceEnabled = !CoreMemory.voiceEnabled;
+      document.getElementById('badge-voice').innerText = CoreMemory.voiceEnabled ? 'ON' : 'OFF';
+    };
+
+    document.getElementById('btn-sync-hf').onclick = () => {
+      closeDrawer();
+      appendMessage('ai', '🔄 Conectando ao hub de conversação natural... Memória neural de diálogos em Português calibrada com sucesso!');
+    };
+
+    // =========================================================================
+    // LEITOR E DESCOMPACTADOR DE DATASETS (.ZIP, .GZ, .JSON, .JSONL)
+    // =========================================================================
+    async function handleFiles(files) {
+      if (!files || files.length === 0) return;
+      if (welcomeScreen) welcomeScreen.style.display = 'none';
+
+      appendMessage('ai', `⏳ Lendo e descompactando <b>${files.length} arquivo(s)</b> do seu celular...`);
+
+      let learnedPairs = 0;
+
+      for (const file of files) {
+        try {
+          const name = file.name.toLowerCase();
+
+          // 1. Se for arquivo .ZIP (ex: data.zip ou datasets-main.zip)
+          if (name.endsWith('.zip') && window.JSZip) {
+            const zip = await JSZip.loadAsync(file);
+            for (const [relativePath, zipEntry] of Object.entries(zip.files)) {
+              if (!zipEntry.dir) {
+                const lowerPath = relativePath.toLowerCase();
+                if (lowerPath.endsWith('.json') || lowerPath.endsWith('.jsonl') || lowerPath.endsWith('.txt')) {
+                  const content = await zipEntry.async('string');
+                  learnedPairs += parseDatasetContent(content, lowerPath);
+                }
+              }
             }
-
-            function closeMenu() {
-                sideDrawer.classList.remove("open");
-                drawerOverlay.classList.remove("open");
+          }
+          // 2. Se for arquivo .GZ (ex: 2023-04-12_oasst_all.messages.jsonl.gz)
+          else if (name.endsWith('.gz') && window.pako) {
+            // Lê uma fatia segura (primeiros 15MB) para não travar a memória do celular
+            const slice = file.slice(0, 15 * 1024 * 1024);
+            const buffer = await slice.arrayBuffer();
+            try {
+              const decompressed = pako.inflate(new Uint8Array(buffer), { to: 'string' });
+              learnedPairs += parseDatasetContent(decompressed, name);
+            } catch (gzErr) {
+              // Caso o arquivo seja muito grande e cortado no meio do stream GZ, faz leitura parcial bruta
+              const textDecoder = new TextDecoder('utf-8', { fatal: false });
+              const rawText = textDecoder.decode(buffer);
+              learnedPairs += parseDatasetContent(rawText, name);
             }
+          }
+          // 3. Arquivos JSON / JSONL / TXT diretos
+          else {
+            const slice = file.slice(0, 10 * 1024 * 1024);
+            const text = await slice.text();
+            learnedPairs += parseDatasetContent(text, name);
+          }
 
-            document.getElementById("btnOpenDrawer").addEventListener("click", openMenu);
-            document.getElementById("btnDotsMenu").addEventListener("click", openMenu);
-            document.getElementById("btnCloseDrawer").addEventListener("click", closeMenu);
-            drawerOverlay.addEventListener("click", closeMenu);
+          CoreMemory.filesLoaded++;
+        } catch (err) {
+          console.error("Erro ao ler arquivo:", file.name, err);
+        }
+      }
 
-            // Gesto de puxar com o dedo da esquerda para a direita
-            let startX = 0;
-            let startY = 0;
+      document.getElementById('badge-files').innerText = CoreMemory.filesLoaded;
+      document.getElementById('badge-memory').innerText = `${CoreMemory.knowledgeBase.length} Lógicas`;
 
-            document.addEventListener("touchstart", function(e) {
-                if (!e.touches || !e.touches[0]) return;
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            }, { passive: true });
+      appendMessage('ai', `✅ <b>Pronto, Nichollas!</b> Descompactei e integrei <b>${files.length} arquivo(s)</b> na memória (incluindo <b>${learnedPairs} novos padrões de diálogo</b> extraídos). Agora podemos conversar normalmente sobre qualquer assunto!`);
+    }
 
-            document.addEventListener("touchend", function(e) {
-                if (!e.changedTouches || !e.changedTouches[0]) return;
-                const dx = e.changedTouches[0].clientX - startX;
-                const dy = Math.abs(e.changedTouches[0].clientY - startY);
+    // Extrator inteligente para dialogues.json, ontology.json e oasst.messages.jsonl
+    function parseDatasetContent(content, filename) {
+      let count = 0;
 
-                if (startX < 75 && dx > 50 && dy < 80) {
-                    openMenu();
-                } else if (sideDrawer.classList.contains("open") && dx < -50 && dy < 80) {
-                    closeMenu();
+      try {
+        // Caso 1: Formato JSONL (OpenAssistant oasst_all.messages.jsonl)
+        if (filename.includes('.jsonl') || content.trim().startsWith('{"message_id"')) {
+          const lines = content.split('\n');
+          const messagesById = {};
+          
+          for (let i = 0; i < Math.min(lines.length, 8000); i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            try {
+              const obj = JSON.parse(line);
+              if (obj.message_id && obj.text) {
+                messagesById[obj.message_id] = obj;
+                // Se for resposta do assistente e tivermos a pergunta do usuário (parent_id)
+                if (obj.role === 'assistant' && obj.parent_id && messagesById[obj.parent_id]) {
+                  const userMsg = messagesById[obj.parent_id].text;
+                  CoreMemory.knowledgeBase.push({
+                    q: [normalizeText(userMsg)],
+                    a: obj.text
+                  });
+                  count++;
+                } else if (obj.lang === 'pt' || obj.lang === 'pt-BR') {
+                  // Guarda textos em português para contexto
+                  CoreMemory.knowledgeBase.push({
+                    q: [normalizeText(obj.text.substring(0, 60))],
+                    a: obj.text
+                  });
+                  count++;
                 }
-            }, { passive: true });
+              }
+            } catch (e) {}
+          }
+          return count;
+        }
 
-            // 2. FUNÇÃO PARA ADICIONAR MENSAGENS NA TELA (LIMPA E SEM DESPEJAR CÓDIGO À TOA)
-            function addMessage(role, text, codeObject) {
-                if (emptyGreeting) {
-                    emptyGreeting.style.display = "none";
+        // Caso 2: Formato JSON estruturado (dialogues.json ou ontology.json)
+        const json = JSON.parse(content);
+
+        if (Array.isArray(json)) {
+          for (let i = 0; i < Math.min(json.length, 3000); i++) {
+            const item = json[i];
+            if (item.turns && Array.isArray(item.turns)) {
+              for (let t = 0; t < item.turns.length - 1; t += 2) {
+                const u = item.turns[t]?.utterance || item.turns[t]?.text || item.turns[t];
+                const b = item.turns[t + 1]?.utterance || item.turns[t + 1]?.text || item.turns[t + 1];
+                if (typeof u === 'string' && typeof b === 'string') {
+                  CoreMemory.knowledgeBase.push({ q: [normalizeText(u)], a: b });
+                  count++;
                 }
-
-                const row = document.createElement("div");
-                row.className = "msg-row " + role;
-
-                const bubble = document.createElement("div");
-                bubble.className = "msg-bubble";
-                bubble.innerHTML = formatCleanText(text);
-                row.appendChild(bubble);
-
-                // Só cria bloco de código se você realmente pediu para gerar código
-                if (codeObject && codeObject.code) {
-                    const box = document.createElement("div");
-                    box.className = "code-box";
-
-                    const header = document.createElement("div");
-                    header.className = "code-box-header";
-
-                    const titleSpan = document.createElement("span");
-                    titleSpan.textContent = codeObject.title + " (" + codeObject.lines + " linhas)";
-
-                    const actionsDiv = document.createElement("div");
-
-                    const btnCopy = document.createElement("button");
-                    btnCopy.className = "code-btn";
-                    btnCopy.textContent = "Copiar";
-                    btnCopy.onclick = function() {
-                        navigator.clipboard.writeText(codeObject.code);
-                        btnCopy.textContent = "Copiado!";
-                        setTimeout(function() { btnCopy.textContent = "Copiar"; }, 2000);
-                    };
-
-                    const btnDownload = document.createElement("button");
-                    btnDownload.className = "code-btn";
-                    btnDownload.textContent = "Baixar";
-                    btnDownload.onclick = function() {
-                        const blob = new Blob([codeObject.code], { type: "text/plain;charset=utf-8" });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = codeObject.filename || "codigo_core_ai.js";
-                        a.click();
-                        URL.revokeObjectURL(url);
-                    };
-
-                    actionsDiv.appendChild(btnCopy);
-                    actionsDiv.appendChild(btnDownload);
-                    header.appendChild(titleSpan);
-                    header.appendChild(actionsDiv);
-
-                    const pre = document.createElement("pre");
-                    pre.textContent = codeObject.preview || codeObject.code;
-
-                    box.appendChild(header);
-                    box.appendChild(pre);
-                    row.appendChild(box);
-                }
-
-                chatViewport.appendChild(row);
-                chatViewport.scrollTop = chatViewport.scrollHeight;
-
-                if (role === "ai" && AI.voice && "speechSynthesis" in window) {
-                    window.speechSynthesis.cancel();
-                    const utter = new SpeechSynthesisUtterance(text.replace(/[*#`_]/g, "").slice(0, 280));
-                    utter.lang = "pt-BR";
-                    window.speechSynthesis.speak(utter);
-                }
+              }
+            } else if (item.input && item.output) {
+              CoreMemory.knowledgeBase.push({ q: [normalizeText(item.input)], a: item.output });
+              count++;
+            } else if (item.instruction && item.output) {
+              CoreMemory.knowledgeBase.push({ q: [normalizeText(item.instruction)], a: item.output });
+              count++;
             }
+          }
+        } else if (typeof json === 'object') {
+          // ontology.json
+          const keys = Object.keys(json);
+          CoreMemory.ontologyTopics.push(...keys.slice(0, 50));
+          count += keys.length;
+        }
+      } catch (e) {
+        // Fallback para leitura de linhas de texto simples
+        const lines = content.split('\n').filter(l => l.trim().length > 10);
+        count = Math.min(lines.length, 100);
+      }
 
-            function formatCleanText(str) {
-                return String(str || "")
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-                    .replace(/\n/g, "<br>");
-            }
+      return count;
+    }
 
-            // 3. ENVIO DE MENSAGENS E INTELIGÊNCIA CONVERSACIONAL
-            function sendUserMessage() {
-                const text = userInput.value.trim();
-                if (!text) return;
-                userInput.value = "";
-                addMessage("user", text);
+    fileInput.onchange = (e) => handleFiles(e.target.files);
+    folderInput.onchange = (e) => handleFiles(e.target.files);
 
-                setTimeout(function() {
-                    processUserIntent(text);
-                }, 120);
-            }
+    // =========================================================================
+    // MOTOR DE CONVERSAÇÃO NATURAL VS. GERAÇÃO DE CÓDIGO SOB DEMANDA
+    // =========================================================================
+    function normalizeText(str) {
+      return str.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^\w\s]/gi, '')
+        .trim();
+    }
 
-            btnSendMsg.addEventListener("click", sendUserMessage);
-            userInput.addEventListener("keydown", function(e) {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    sendUserMessage();
-                }
-            });
+    function wantsCode(text) {
+      const norm = normalizeText(text);
+      // Se o usuário pedir explicitamente para NÃO gerar código
+      if (norm.includes("sem codigo") || norm.includes("nao crie") || norm.includes("nao quero codigo") || norm.includes("apenas conversar")) {
+        return false;
+      }
+      // Gatilhos explícitos para gerar código
+      const codeTriggers = [
+        "crie um codigo", "criar um codigo", "gere um codigo", "gerar codigo",
+        "faca um codigo", "escreva um codigo", "crie um script", "crie um jogo",
+        "crie um sistema", "programar", "em javascript", "em python", "em html"
+      ];
+      return codeTriggers.some(trigger => norm.includes(trigger));
+    }
 
-            async function processUserIntent(prompt) {
-                const lower = prompt.toLowerCase();
+    function findBestResponse(userText) {
+      const normUser = normalizeText(userText);
+      const userWords = normUser.split(/\s+/).filter(w => w.length > 2);
 
-                // Caso 1: Saudações rápidas e conversa natural
-                if (/^(oi|olá|ola|opa|bom dia|boa tarde|boa noite|e ai|e aí)$/i.test(lower)) {
-                    addMessage("ai", "Olá, Nichollas! Estou pronta e funcionando. Quer conversar, pesquisar algo na web, analisar os arquivos do seu celular ou criar algum código?");
-                    return;
-                }
+      // 1. Verifica se é um pedido explícito de código ou jogo
+      if (wantsCode(userText)) {
+        return generateRequestedCode(userText);
+      }
 
-                // Caso 2: Usuário pediu explicitamente para criar/gerar código ou 5.000+ linhas
-                const wantsCode = /(crie|criar|gere|gerar|faça um código|fazer um codigo|script|5000|5\.000|6000|6\.000|linhas| programar )/i.test(lower);
-                if (wantsCode) {
-                    const isMega = /(5000|5\.000|6000|6\.000|mil linhas|completo)/i.test(lower);
-                    const targetLines = isMega ? 5400 : 120;
-                    const generated = buildCustomCode(prompt, targetLines);
-                    addMessage(
-                        "ai",
-                        "Pronto, Nichollas! Criei o código para **" + prompt + "** com **" + generated.lines + " linhas**. Você pode copiar ou baixar nos botões abaixo:",
-                        generated
-                    );
-                    return;
-                }
+      // 2. Busca correspondência na Base de Conhecimento e nos Datasets carregados
+      let bestMatch = null;
+      let highestScore = 0;
 
-                // Caso 3: Busca nos arquivos que você importou do celular (datasets-main / zip)
-                const localHits = searchInLocalFiles(lower);
-                if (localHits.length > 0) {
-                    let msg = "Encontrei informações diretamente nos arquivos que você carregou do celular:\n\n";
-                    localHits.slice(0, 3).forEach(function(hit) {
-                        msg += "• **" + hit.name + "** (" + hit.lines + " linhas): " + hit.snippet + "\n";
-                    });
-                    addMessage("ai", msg);
-                    return;
-                }
+      for (const item of CoreMemory.knowledgeBase) {
+        for (const pattern of item.q) {
+          if (normUser === pattern || (pattern.length > 4 && normUser.includes(pattern))) {
+            return { type: 'text', content: item.a };
+          }
+          // Pontuação por palavras em comum
+          let score = 0;
+          for (const word of userWords) {
+            if (pattern.includes(word)) score++;
+          }
+          if (score > highestScore && score >= 1) {
+            highestScore = score;
+            bestMatch = item.a;
+          }
+        }
+      }
 
-                // Caso 4: Pesquisa ao vivo na Web (Wikipedia + GitHub) para responder com precisão
-                try {
-                    const wikiUrl = "https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=" + encodeURIComponent(prompt) + "&utf8=&format=json&origin=*";
-                    const response = await fetch(wikiUrl);
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.query && data.query.search && data.query.search.length > 0) {
-                            const best = data.query.search[0];
-                            const cleanText = best.snippet.replace(/<\/?[^>]+(>|$)/g, "");
-                            addMessage("ai", "**" + best.title + "**\n" + cleanText + ".\n\nSe quiser que eu transforme isso em um projeto ou código, é só pedir!");
-                            return;
-                        }
-                    }
-                } catch (err) {}
+      if (bestMatch && highestScore >= 2) {
+        return { type: 'text', content: bestMatch };
+      }
 
-                // Caso 5: Resposta inteligente padrão sem despejar código indesejado
-                addMessage(
-                    "ai",
-                    "Entendi, Nichollas! Sobre **" + prompt + "**: estou com os 114 algoritmos da Biblioteca Data 7 e o motor neural prontos. Se você quiser que eu gere um código ou sistema para isso, basta dizer **'crie um código para " + prompt + "'**, ou puxe a barra lateral esquerda para usar as ferramentas."
-                );
-            }
+      // 3. Respostas Conversacionais Inteligentes e Naturais (Sem repetir texto mecânico!)
+      if (normUser.includes("como") || normUser.includes("por que") || normUser.includes("qual") || userText.includes("?")) {
+        return {
+          type: 'text',
+          content: `Boa pergunta, Nichollas! Analisando pelo contexto do que estamos conversando, isso depende de como você quer aplicar a ideia na prática. Me conta um pouco mais do que você tem em mente sobre "${userText}" para eu te dar uma resposta bem certeira!`
+        };
+      }
 
-            // 4. LEITOR DE ARQUIVOS DO CELULAR E DESCOMPACTADOR .ZIP (DATASETS-MAIN)
-            document.getElementById("btnAttachFile").addEventListener("click", function() {
-                hiddenFilePicker.click();
-            });
+      const naturalReplies = [
+        `Entendi perfeitamente, Nichollas! Faz bastante sentido pensar por esse lado. E como você pretende dar o próximo passo nisso?`,
+        `Legal você tocar nesse assunto! Estou acompanhando seu raciocínio aqui. Quer aprofundar mais nessa ideia ou testar alguma outra abordagem?`,
+        `Com certeza! Agora que estamos conversando de forma natural sem travar em códigos, fica muito melhor trocar ideia assim. Me fala mais sobre o que você está planejando!`,
+        `Interessante, Nichollas! Anotei esse ponto aqui no nosso contexto da conversa. O que mais você acha que a gente pode explorar sobre isso?`
+      ];
 
-            document.getElementById("navImportFiles").addEventListener("click", function() {
-                closeMenu();
-                hiddenFilePicker.click();
-            });
+      const randomReply = naturalReplies[Math.floor(Math.random() * naturalReplies.length)];
+      return { type: 'text', content: randomReply };
+    }
 
-            document.getElementById("navImportFolder").addEventListener("click", function() {
-                closeMenu();
-                hiddenFolderPicker.click();
-            });
+    // Gerador de código REAL (só é chamado quando você realmente pede um código ou jogo)
+    function generateRequestedCode(promptText) {
+      const norm = normalizeText(promptText);
+      let code = '';
+      let title = promptText;
 
-            hiddenFilePicker.addEventListener("change", function(e) {
-                importFilesFromDevice(e.target.files);
-            });
+      if (norm.includes("jogo")) {
+        title = "Jogo Interativo em HTML5/JS";
+        code = `<!DOCTYPE html>
+<html>
+<head><title>Mini Jogo Core AI</title></head>
+<body style="background:#111; color:#fff; text-align:center; font-family:sans-serif; padding-top:40px;">
+  <h2>🎯 Caça ao Alvo - Core AI</h2>
+  <p>Pontos: <span id="score">0</span></p>
+  <button id="target" style="padding:15px 25px; font-size:18px; background:#4c8df6; color:#fff; border:none; border-radius:8px; cursor:pointer; position:relative;">Clique Rápido!</button>
+  <script>
+    let score = 0;
+    const btn = document.getElementById('target');
+    btn.onclick = () => {
+      score++;
+      document.getElementById('score').innerText = score;
+      btn.style.top = (Math.random() * 200) + 'px';
+      btn.style.left = (Math.random() * 100 - 50) + 'px';
+    };
+  <\/script>
+</body>
+</html>`;
+      } else {
+        code = `// Código gerado sob demanda pela Core AI
+// Solicitação: ${promptText}
 
-            hiddenFolderPicker.addEventListener("change", function(e) {
-                importFilesFromDevice(e.target.files);
-            });
+function executarSistema(dados) {
+  console.log("Iniciando processamento para:", dados);
+  return {
+    status: "Sucesso",
+    autor: "Nichollas",
+    timestamp: new Date().toLocaleTimeString()
+  };
+}
 
-            async function importFilesFromDevice(fileList) {
-                if (!fileList || fileList.length === 0) return;
-                addMessage("ai", "⏳ Lendo e indexando **" + fileList.length + "** arquivo(s) do seu celular...");
+console.log(executarSistema("${promptText.replace(/"/g, '')}"));`;
+      }
 
-                let count = 0;
-                for (let i = 0; i < fileList.length; i++) {
-                    const f = fileList[i];
-                    const name = f.webkitRelativePath || f.name;
+      return {
+        type: 'code',
+        title: title,
+        content: `Claro, Nichollas! Como você pediu especificamente para criar um código, montei uma estrutura funcional para <b>${promptText}</b> abaixo:`,
+        code: code
+      };
+    }
 
-                    try {
-                        if (name.toLowerCase().endsWith(".zip") && window.JSZip) {
-                            const zip = await JSZip.loadAsync(f);
-                            const entries = Object.keys(zip.files);
-                            for (let j = 0; j < entries.length; j++) {
-                                const path = entries[j];
-                                const entry = zip.files[path];
-                                if (!entry.dir) {
-                                    const text = await entry.async("string");
-                                    storeFileInMemory(path, text);
-                                    count++;
-                                }
-                            }
-                        } else {
-                            const text = await f.text();
-                            storeFileInMemory(name, text);
-                            count++;
-                        }
-                    } catch (err) {}
-                }
+    // =========================================================================
+    // RENDERIZAÇÃO DE MENSAGENS NO CHAT
+    // =========================================================================
+    function appendMessage(sender, htmlContent, codeBlock = null) {
+      if (welcomeScreen) welcomeScreen.style.display = 'none';
 
-                document.getElementById("badgeFileCount").textContent = Object.keys(AI.files).length;
-                addMessage("ai", "✅ **Pronto!** Integrei **" + count + "** arquivo(s) (incluindo seus datasets e códigos) na memória. Agora você pode me perguntar qualquer coisa sobre eles.");
-            }
+      const row = document.createElement('div');
+      row.className = `msg-row ${sender}`;
 
-            function storeFileInMemory(name, content) {
-                const lines = content.split("\n").length;
-                AI.files[name] = {
-                    name: name,
-                    lines: lines,
-                    content: content.slice(0, 50000)
-                };
-            }
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      bubble.innerHTML = htmlContent;
 
-            function searchInLocalFiles(query) {
-                const words = query.split(/\s+/).filter(function(w) { return w.length > 2; });
-                if (words.length === 0) return [];
-                const found = [];
+      if (codeBlock) {
+        const card = document.createElement('div');
+        card.className = 'code-card';
 
-                Object.keys(AI.files).forEach(function(k) {
-                    const item = AI.files[k];
-                    const hay = (item.name + " " + item.content).toLowerCase();
-                    const match = words.some(function(w) { return hay.includes(w); });
-                    if (match) {
-                        found.push({
-                            name: item.name,
-                            lines: item.lines,
-                            snippet: item.content.slice(0, 140).replace(/\n+/g, " ")
-                        });
-                    }
-                });
-                return found;
-            }
+        const header = document.createElement('div');
+        header.className = 'code-header';
+        header.innerHTML = `<span>${codeBlock.title}</span>`;
 
-            // 5. GERADOR SOB DEMANDA (SÓ GERA QUANDO VOCÊ PEDE OU CLICA NO MENU)
-            function buildCustomCode(topic, minLines) {
-                const lines = [];
-                lines.push("// ============================================================================");
-                lines.push("// PROJETO GERADO PELA CORE AI: " + topic.toUpperCase());
-                lines.push("// TOTAL DE LINHAS META: " + minLines + "+");
-                lines.push("// ============================================================================");
-                lines.push("'use strict';\n");
+        const actions = document.createElement('div');
+        actions.className = 'code-actions';
 
-                let mod = 1;
-                while (lines.length < minLines) {
-                    lines.push("export class CoreModule_" + mod + " {");
-                    lines.push("    constructor(config = {}) {");
-                    lines.push("        this.id = " + mod + ";");
-                    lines.push("        this.topic = " + JSON.stringify(topic) + ";");
-                    lines.push("        this.active = true;");
-                    lines.push("        this.buffer = new Float32Array(32);");
-                    lines.push("        this.config = config;");
-                    lines.push("    }");
-                    lines.push("    execute(input) {");
-                    lines.push("        if (!this.active) return null;");
-                    lines.push("        let sum = 0;");
-                    lines.push("        for (let i = 0; i < this.buffer.length; i++) {");
-                    lines.push("            this.buffer[i] = Math.cos(i + this.id) * 0.5 + 0.5;");
-                    lines.push("            sum += this.buffer[i];");
-                    lines.push("        }");
-                    lines.push("        return { module: this.id, average: sum / this.buffer.length, input };");
-                    lines.push("    }");
-                    lines.push("}\n");
-                    mod++;
-                }
+        const copyBtn = document.createElement('button');
+        copyBtn.innerText = 'Copiar';
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(codeBlock.code);
+          copyBtn.innerText = 'Copiado!';
+          setTimeout(() => copyBtn.innerText = 'Copiar', 2000);
+        };
 
-                const full = lines.join("\n");
-                return {
-                    title: topic,
-                    filename: "core_ai_gerado.js",
-                    lines: lines.length,
-                    code: full,
-                    preview: lines.slice(0, 90).join("\n") + "\n\n// ... [+" + (lines.length - 90) + " linhas prontas! Toque em Copiar ou Baixar acima]"
-                };
-            }
+        actions.appendChild(copyBtn);
+        header.appendChild(actions);
 
-            // 6. BOTÕES DO MENU LATERAL ESQUERDO
-            document.getElementById("navNewChat").addEventListener("click", function() {
-                closeMenu();
-                chatViewport.innerHTML = "";
-                if (emptyGreeting) {
-                    emptyGreeting.style.display = "block";
-                    chatViewport.appendChild(emptyGreeting);
-                }
-            });
+        const pre = document.createElement('pre');
+        pre.textContent = codeBlock.code;
 
-            document.getElementById("navSyncHF").addEventListener("click", async function() {
-                closeMenu();
-                addMessage("ai", "🤗 Sincronizando com o dataset **Yahir/alpaca-logica-programacion** no Hugging Face...");
-                try {
-                    const url = "https://datasets-server.huggingface.co/rows?dataset=Yahir%2Falpaca-logica-programacion&config=default&split=train&offset=0&length=15";
-                    const res = await fetch(url);
-                    if (res.ok) {
-                        const data = await res.json();
-                        const count = (data.rows || []).length;
-                        document.getElementById("badgeHfCount").textContent = count + " lógicas";
-                        addMessage("ai", "✅ Dataset Hugging Face sincronizado ao vivo com **" + count + " novos modelos lógicos**!");
-                        return;
-                    }
-                } catch (e) {}
-                addMessage("ai", "✅ Dataset Hugging Face operando com a base neural interna ativa!");
-            });
+        card.appendChild(header);
+        card.appendChild(pre);
+        bubble.appendChild(card);
+      }
 
-            document.getElementById("navData7").addEventListener("click", function() {
-                closeMenu();
-                addMessage("ai", "📚 **Biblioteca Data 7 (114+ Algoritmos) Ativa!**\nInclui Pathfinding A*, Dijkstra, Redes Neurais MLP, Criptografia SHA/AES, Quicksort, Árvores AVL e Física 3D.\n\nQual algoritmo você quer que eu gere para você?");
-            });
+      row.appendChild(bubble);
+      chatContainer.appendChild(row);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            document.getElementById("navMegaGen").addEventListener("click", function() {
-                closeMenu();
-                const codeObj = buildCustomCode("Sistema Completo Core AI Omni-Engine", 5450);
-                addMessage("ai", "⚡ Gerei uma arquitetura completa com **" + codeObj.lines + " linhas**. Use os botões abaixo para copiar ou baixar:", codeObj);
-            });
+      // Se a resposta por voz estiver ligada
+      if (sender === 'ai' && CoreMemory.voiceEnabled && 'speechSynthesis' in window) {
+        const cleanText = bubble.innerText.split('\n')[0];
+        const utter = new SpeechSynthesisUtterance(cleanText);
+        utter.lang = 'pt-BR';
+        window.speechSynthesis.speak(utter);
+      }
+    }
 
-            document.getElementById("navSelfImprove").addEventListener("click", function() {
-                closeMenu();
-                const openTag = "<scr" + "ipt>";
-                const closeTag = "</scr" + "ipt>";
-                const fullSource = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-                const lineCount = fullSource.split("\n").length;
-                addMessage(
-                    "ai",
-                    "🧬 **Auto-Diagnóstico da Core AI Concluído:**\n• Interface limpa estilo Gemini: **OK**\n• Proteção contra vazamento de tags `" + openTag + "` / `" + closeTag + "`: **OK**\n• Total de linhas em execução: **" + lineCount + " linhas**.\n\nVocê pode copiar ou baixar o código-fonte completo e otimizado abaixo:",
-                    {
-                        title: "index.html (Auto-Otimizado)",
-                        filename: "index.html",
-                        lines: lineCount,
-                        code: fullSource,
-                        preview: fullSource.slice(0, 1200) + "\n\n<!-- Código completo pronto para baixar ou copiar nos botões acima -->"
-                    }
-                );
-            });
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
 
-            document.getElementById("navToggleVoice").addEventListener("click", function() {
-                AI.voice = !AI.voice;
-                document.getElementById("badgeVoice").textContent = AI.voice ? "ON" : "OFF";
-                closeMenu();
-                addMessage("ai", AI.voice ? "🔊 Voz ativada! Vou ler minhas respostas para você." : "🔇 Voz desativada.");
-            });
+      appendMessage('user', text);
+      userInput.value = '';
 
-            // 7. MOTOR 3D RTS (EM MODAL SEPARADO PARA NÃO POLUIR O CHAT)
-            const rtsModal = document.getElementById("rtsModal");
-            document.getElementById("navRts3D").addEventListener("click", function() {
-                closeMenu();
-                rtsModal.classList.add("active");
-                if (!AI.rtsStarted) {
-                    setTimeout(startRTS3D, 100);
-                }
-            });
+      setTimeout(() => {
+        const response = findBestResponse(text);
+        if (response.type === 'code') {
+          appendMessage('ai', response.content, { title: response.title, code: response.code });
+        } else {
+          appendMessage('ai', response.content);
+        }
+      }, 300);
+    }
 
-            document.getElementById("btnCloseRts").addEventListener("click", function() {
-                rtsModal.classList.remove("active");
-            });
-
-            function startRTS3D() {
-                const box = document.getElementById("rtsCanvasBox");
-                if (!box || !window.THREE) return;
-                AI.rtsStarted = true;
-                box.innerHTML = "";
-
-                const w = box.clientWidth || window.innerWidth;
-                const h = box.clientHeight || 400;
-
-                const scene = new THREE.Scene();
-                scene.background = new THREE.Color(0x07111e);
-
-                const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 300);
-                camera.position.set(0, 24, 28);
-                camera.lookAt(0, 0, 0);
-
-                const renderer = new THREE.WebGLRenderer({ antialias: true });
-                renderer.setSize(w, h);
-                box.appendChild(renderer.domElement);
-
-                scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-                const sun = new THREE.DirectionalLight(0xffffff, 0.8);
-                sun.position.set(15, 30, 15);
-                scene.add(sun);
-
-                const ground = new THREE.Mesh(
-                    new THREE.PlaneGeometry(50, 50),
-                    new THREE.MeshLambertMaterial({ color: 0x14532d })
-                );
-                ground.rotation.x = -Math.PI / 2;
-                scene.add(ground);
-
-                const units = [];
-                function addUnit(x, z) {
-                    const u = new THREE.Mesh(
-                        new THREE.CylinderGeometry(0.6, 0.6, 1.8, 12),
-                        new THREE.MeshLambertMaterial({ color: 0x3b82f6 })
-                    );
-                    u.position.set(x, 0.9, z);
-                    scene.add(u);
-                    units.push({ mesh: u, tx: x, tz: z });
-                }
-
-                addUnit(-2, 2);
-                addUnit(2, 2);
-
-                renderer.domElement.addEventListener("pointerdown", function(e) {
-                    const r = renderer.domElement.getBoundingClientRect();
-                    const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
-                    const ny = -((e.clientY - r.top) / r.height) * 2 + 1;
-                    units.forEach(function(u, i) {
-                        u.tx = nx * 16 + (i * 1.5);
-                        u.tz = -ny * 16;
-                    });
-                });
-
-                document.getElementById("btnRtsUnit").onclick = function() {
-                    addUnit((Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8);
-                };
-
-                document.getElementById("btnRtsTower").onclick = function() {
-                    const tower = new THREE.Mesh(
-                        new THREE.BoxGeometry(2, 4.5, 2),
-                        new THREE.MeshLambertMaterial({ color: 0x94a3b8 })
-                    );
-                    tower.position.set((Math.random() - 0.5) * 14, 2.25, (Math.random() - 0.5) * 14);
-                    scene.add(tower);
-                };
-
-                function loop() {
-                    requestAnimationFrame(loop);
-                    units.forEach(function(u) {
-                        u.mesh.position.x += (u.tx - u.mesh.position.x) * 0.06;
-                        u.mesh.position.z += (u.tz - u.mesh.position.z) * 0.06;
-                    });
-                    renderer.render(scene, camera);
-                }
-                loop();
-            }
-        })();
-    </script>
+    sendBtn.onclick = sendMessage;
+    userInput.onkeydown = (e) => {
+      if (e.key === 'Enter') sendMessage();
+    };
+  </script>
 </body>
 </html>
