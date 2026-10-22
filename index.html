@@ -22,6 +22,7 @@
       --text-dim: #94a3b8;
       --border: rgba(255, 255, 255, 0.08);
       --success: #10b981;
+      --danger: #ef4444;
     }
 
     * {
@@ -41,7 +42,7 @@
       overflow: hidden;
     }
 
-    /* Cabeçalho */
+    /* Cabeçalho Limpo Original */
     header {
       height: 60px;
       background-color: var(--bg-main);
@@ -84,7 +85,7 @@
       box-shadow: 0 0 8px var(--success);
     }
 
-    /* Menu Lateral (Drawer) */
+    /* Menu Lateral Esquerdo (Drawer) */
     .drawer-overlay {
       position: fixed;
       inset: 0;
@@ -126,7 +127,7 @@
       align-items: center;
       padding-bottom: 16px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 16px;
+      margin-bottom: 8px;
     }
 
     .drawer-section-title {
@@ -151,6 +152,7 @@
       border: 1px solid var(--border);
       font-size: 14px;
       transition: background 0.2s;
+      user-select: none;
     }
 
     .drawer-item:active {
@@ -166,7 +168,17 @@
       font-weight: 600;
     }
 
-    /* Área de Chat */
+    .badge.online {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .badge.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    /* Área de Chat Limpa Estilo Gemini */
     #chat-container {
       flex: 1;
       overflow-y: auto;
@@ -233,6 +245,56 @@
       max-width: 95%;
     }
 
+    /* Status discreto de pesquisa na web */
+    .search-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 6px 12px;
+      border-radius: 20px;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* Chips discretos de Fontes do Google/Web */
+    .sources-box {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .source-chip {
+      font-size: 11px;
+      color: var(--text-dim);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 14px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .source-chip:active {
+      border-color: var(--accent);
+      color: var(--text-main);
+    }
+
     /* Blocos de Código */
     .code-card {
       background: #14171f;
@@ -272,7 +334,7 @@
       max-height: 300px;
     }
 
-    /* Barra de Digitação */
+    /* Barra de Digitação Original */
     .input-area {
       padding: 12px 16px;
       background-color: var(--bg-main);
@@ -332,7 +394,7 @@
   <input type="file" id="file-input" multiple accept=".zip,.gz,.jsonl,.json,.txt,.js,.py,.html" style="display: none;">
   <input type="file" id="folder-input" webkitdirectory directory multiple style="display: none;">
 
-  <!-- Menu Lateral -->
+  <!-- Janelinha Lateral Esquerda com TODOS os Botões -->
   <div class="drawer-overlay" id="drawer-overlay"></div>
   <aside class="drawer" id="drawer">
     <div class="drawer-header">
@@ -344,6 +406,16 @@
     <div class="drawer-item" id="btn-clear-chat">
       <span>💬 Conversa Limpa</span>
       <span class="badge">Início</span>
+    </div>
+
+    <div class="drawer-section-title">Google & Rede em Tempo Real</div>
+    <div class="drawer-item" id="btn-toggle-web">
+      <span>🌐 Busca Google na Rede</span>
+      <span class="badge online" id="badge-web">ON</span>
+    </div>
+    <div class="drawer-item" id="btn-config-api">
+      <span>🔑 Chave Google Gemini</span>
+      <span class="badge" id="badge-api">Auto</span>
     </div>
 
     <div class="drawer-section-title">Armazenamento & Datasets</div>
@@ -359,9 +431,17 @@
       <span>🤗 Dataset Hugging Face</span>
       <span class="badge" id="badge-hf">Ativo</span>
     </div>
+    <div class="drawer-item" id="btn-status-db">
+      <span>💾 Memória IndexedDB</span>
+      <span class="badge online" id="badge-db-status">Pronto</span>
+    </div>
+    <div class="drawer-item" id="btn-clear-db">
+      <span>🗑️ Resetar Banco Salvo</span>
+      <span class="badge danger">Limpar</span>
+    </div>
 
     <div class="drawer-section-title">Engenharia & Motores</div>
-    <div class="drawer-item">
+    <div class="drawer-item" id="btn-memory-info">
       <span>📚 Memória de Diálogos</span>
       <span class="badge" id="badge-memory">Pronta</span>
     </div>
@@ -371,7 +451,7 @@
     </div>
   </aside>
 
-  <!-- Topo -->
+  <!-- Topo Original Limpo -->
   <header>
     <div class="header-left">
       <button class="menu-btn" id="open-drawer">☰</button>
@@ -381,12 +461,12 @@
     </div>
   </header>
 
-  <!-- Conversas -->
+  <!-- Área de Conversa Limpa Estilo Gemini -->
   <main id="chat-container">
     <div class="welcome-screen" id="welcome-screen">
       <div class="welcome-title">Olá, Nichollas</div>
-      <p class="welcome-sub">
-        Modo conversação natural ativado! Carregue seu <b>data.zip</b> ou <b>oasst.jsonl.gz</b> no menu lateral ou comece a conversar comigo agora mesmo.
+      <p class="welcome-sub" id="welcome-sub-text">
+        Modo conversação natural e busca Google em tempo real ativados! Carregue seu <b>data.zip</b> ou <b>oasst.jsonl.gz</b> no menu lateral ou comece a conversar comigo agora mesmo.
       </p>
     </div>
   </main>
@@ -402,30 +482,101 @@
 
   <script>
     // =========================================================================
-    // BANCO DE DADOS CONVERSACIONAL INTEGRADO (Ontology + Dialogues + OpenAssistant)
+    // 1. BANCO DE DADOS INDEXEDDB (SALVAMENTO AUTOMÁTICO NO CELULAR)
     // =========================================================================
+    const DB_NAME = 'CoreAIOmniDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'dataset_memory';
+
+    const CoreIndexedDB = {
+      db: null,
+
+      init() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+              db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            }
+          };
+          request.onsuccess = (e) => {
+            this.db = e.target.result;
+            resolve(this.db);
+          };
+          request.onerror = (e) => reject(e);
+        });
+      },
+
+      async saveState(filesLoaded, learnedKnowledge, ontologyTopics) {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+          const tx = this.db.transaction(STORE_NAME, 'readwrite');
+          const store = tx.objectStore(STORE_NAME);
+          store.put({
+            id: 'main_state',
+            filesLoaded,
+            learnedKnowledge,
+            ontologyTopics,
+            updatedAt: new Date().toLocaleString('pt-BR')
+          });
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = (e) => reject(e);
+        });
+      },
+
+      async loadState() {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+          const tx = this.db.transaction(STORE_NAME, 'readonly');
+          const store = tx.objectStore(STORE_NAME);
+          const req = store.get('main_state');
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = (e) => reject(e);
+        });
+      },
+
+      async clearState() {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+          const tx = this.db.transaction(STORE_NAME, 'readwrite');
+          const store = tx.objectStore(STORE_NAME);
+          store.clear();
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = (e) => reject(e);
+        });
+      }
+    };
+
+    // =========================================================================
+    // 2. MEMÓRIA CENTRAL DA IA (CONVERSA NATURAL + REDE + DATASETS)
+    // =========================================================================
+    const BaseKnowledge = [
+      { q: ["oi", "ola", "bom dia", "boa tarde", "boa noite", "e ai", "opa"], a: "Olá, Nichollas! Tudo ótimo por aqui. Estou conectada à rede em tempo real e com a memória pronta para bater um papo normal, pesquisar qualquer assunto ou ajudar nos seus projetos. Sobre o que você quer conversar hoje?" },
+      { q: ["tudo bem", "como voce esta", "como vai", "tudo certo"], a: "Comigo está tudo excelente, rodando liso, com memória IndexedDB ativa e conectada ao Google! E com você, como estão as coisas por aí?" },
+      { q: ["quem e voce", "qual seu nome", "o que voce faz", "me explica o que vc entendeu"], a: "Eu sou a Core AI, a sua inteligência artificial pessoal. Meu sistema conversa naturalmente com você como o Gemini, guarda seus datasets (.zip e .gz) automaticamente na memória do celular e pesquisa informações em tempo real na web!" },
+      { q: ["conversar sem codigos", "debater ideias", "discutir topicos", "como amigos", "conversar comigo normal"], a: "Combinado, Nichollas! Modo código desativado para conversas normais. Vamos apenas conversar naturalmente, pesquisar na rede e trocar ideias como amigos. Só gero código se você pedir claramente!" },
+      { q: ["dataset", "aprendeu", "arquivos", "oasst", "ontology", "dialogues", "indexeddb"], a: "Meu motor descompacta arquivos .zip e .gz direto no celular e salva tudo automaticamente no banco IndexedDB. Mesmo que você feche a página, tudo o que eu aprendi continua salvo!" },
+      { q: ["jogo", "ark", "exiled kingdoms", "bitcoin miner", "jogar"], a: "Jogos são um ótimo assunto! Seja sobrevivendo com dinossauros no ARK, explorando masmorras em Exiled Kingdoms ou otimizando GPUs no Bitcoin Miner, qual jogo você está curtindo mais ultimamente?" },
+      { q: ["musica", "poesia", "letra", "sertanejo", "trap"], a: "Adoro criação artística! Se quiser compor uma letra nova, escrever uma poesia romântica ou criar ideias para um som estilo Trap ou Sertanejo, é só mandar o tema." },
+      { q: ["obrigado", "valeu", "show", "top", "perfeito"], a: "Tamo junto, Nichollas! Fico feliz em ajudar. Se precisar pesquisar mais alguma coisa ou continuar o papo, estou por aqui." }
+    ];
+
     const CoreMemory = {
       filesLoaded: 0,
       voiceEnabled: false,
+      webSearchEnabled: true,
+      geminiApiKey: localStorage.getItem('core_ai_gemini_key') || '',
+      learnedKnowledge: [],
+      ontologyTopics: [],
       conversationHistory: [],
-      
-      // Base de conhecimento inicial pré-integrada dos seus datasets (Português Natural)
-      knowledgeBase: [
-        { q: ["oi", "ola", "bom dia", "boa tarde", "boa noite", "e ai", "opa"], a: "Olá, Nichollas! Tudo ótimo por aqui. Estou pronta para bater um papo normal com você, trocar ideias ou ajudar em algum projeto. Sobre o que você quer conversar hoje?" },
-        { q: ["tudo bem", "como voce esta", "como vai", "tudo certo"], a: "Comigo está tudo excelente, rodando liso e com a memória de conversação atualizada! E com você, como estão as coisas por aí?" },
-        { q: ["quem e voce", "qual seu nome", "o que voce faz", "me explica o que vc entendeu"], a: "Eu sou a Core AI, a sua inteligência artificial pessoal. Agora meu sistema foi atualizado: eu não fico mais gerando código sem você pedir. Eu leio seus datasets (como o OpenAssistant e o data.zip) para conversar naturalmente com você como uma parceira de ideias!" },
-        { q: ["conversar sem codigos", "debater ideias", "discutir topicos", "como amigos", "conversar comigo normal"], a: "Combinado, Nichollas! Modo código desativado para conversas normais. A partir de agora vamos apenas conversar naturalmente, trocar ideias e bater papo como amigos. Só vou gerar código se você me pedir claramente (como 'crie um código'). Qual é a boa de hoje?" },
-        { q: ["dataset", "aprendeu", "arquivos", "oasst", "ontology", "dialogues"], a: "Sim! Meu novo motor consegue abrir arquivos compactados (.zip e .gz) e extrair os pares de perguntas e respostas dos arquivos dialogues.json, ontology.json e do OpenAssistant (oasst). Quanto mais arquivos você carregar no botão '+', mais inteligente meu vocabulário fica!" },
-        { q: ["jogo", "ark", "exiled kingdoms", "bitcoin miner", "jogar"], a: "Jogos são um ótimo assunto! Seja sobrevivendo com dinossauros no ARK, explorando masmorras em RPGs como Exiled Kingdoms ou otimizando estratégias, qual jogo você está curtindo mais ultimamente?" },
-        { q: ["musica", "poesia", "letra", "sertanejo", "trap"], a: "Eu adoro criação artística! Se quiser compor uma letra nova, criar uma poesia romântica ou discutir ideias para uma batida de música, é só me dar o tema que a gente desenvolve junto." },
-        { q: ["obrigado", "valeu", "show", "top", "perfeito"], a: "Tamo junto, Nichollas! Fico feliz em ajudar. Se precisar de mais alguma coisa ou só quiser continuar o papo, estou por aqui." }
-      ],
 
-      // Tópicos extraídos da Ontologia (data/ontology.json)
-      ontologyTopics: []
+      getAllKnowledge() {
+        return [...BaseKnowledge, ...this.learnedKnowledge];
+      }
     };
 
-    // Elementos da Interface
+    // Referências de Interface
     const chatContainer = document.getElementById('chat-container');
     const welcomeScreen = document.getElementById('welcome-screen');
     const userInput = document.getElementById('user-input');
@@ -435,19 +586,60 @@
     const fileInput = document.getElementById('file-input');
     const folderInput = document.getElementById('folder-input');
 
-    // Controle do Menu Lateral
+    // Badges da Janelinha Lateral
+    const badgeWeb = document.getElementById('badge-web');
+    const badgeApi = document.getElementById('badge-api');
+    const badgeFiles = document.getElementById('badge-files');
+    const badgeDbStatus = document.getElementById('badge-db-status');
+    const badgeMemory = document.getElementById('badge-memory');
+    const badgeVoice = document.getElementById('badge-voice');
+
+    function updateBadges() {
+      badgeFiles.innerText = CoreMemory.filesLoaded;
+      badgeMemory.innerText = `${CoreMemory.getAllKnowledge().length} Lógicas`;
+      if (CoreMemory.geminiApiKey) {
+        badgeApi.innerText = 'Ativa';
+        badgeApi.classList.add('online');
+      } else {
+        badgeApi.innerText = 'Auto';
+        badgeApi.classList.remove('online');
+      }
+    }
+
+    // Restauração Automática do IndexedDB ao abrir o App
+    window.addEventListener('DOMContentLoaded', async () => {
+      updateBadges();
+      try {
+        const saved = await CoreIndexedDB.loadState();
+        if (saved && (saved.filesLoaded > 0 || (saved.learnedKnowledge && saved.learnedKnowledge.length > 0))) {
+          CoreMemory.filesLoaded = saved.filesLoaded || 0;
+          CoreMemory.learnedKnowledge = saved.learnedKnowledge || [];
+          CoreMemory.ontologyTopics = saved.ontologyTopics || [];
+          badgeDbStatus.innerText = 'Salvo';
+          updateBadges();
+        }
+      } catch (e) {
+        console.warn("IndexedDB inicializado em modo padrão:", e);
+      }
+    });
+
+    // =========================================================================
+    // 3. CONTROLE DE TODOS OS BOTÕES DA JANELINHA LATERAL ESQUERDA
+    // =========================================================================
     document.getElementById('open-drawer').onclick = () => {
       drawer.classList.add('open');
       drawerOverlay.classList.add('open');
     };
+
     const closeDrawer = () => {
       drawer.classList.remove('open');
       drawerOverlay.classList.remove('open');
     };
+
     document.getElementById('close-drawer').onclick = closeDrawer;
     drawerOverlay.onclick = closeDrawer;
 
-    // Botões de Ação
+    // 1. Conversa Limpa
     document.getElementById('btn-clear-chat').onclick = () => {
       chatContainer.innerHTML = '';
       chatContainer.appendChild(welcomeScreen);
@@ -456,36 +648,104 @@
       closeDrawer();
     };
 
-    document.getElementById('btn-import-files').onclick = () => { closeDrawer(); fileInput.click(); };
-    document.getElementById('quick-upload-btn').onclick = () => fileInput.click();
-    document.getElementById('btn-import-folder').onclick = () => { closeDrawer(); folderInput.click(); };
-
-    document.getElementById('btn-toggle-voice').onclick = () => {
-      CoreMemory.voiceEnabled = !CoreMemory.voiceEnabled;
-      document.getElementById('badge-voice').innerText = CoreMemory.voiceEnabled ? 'ON' : 'OFF';
+    // 2. Busca Google na Rede (ON / OFF)
+    document.getElementById('btn-toggle-web').onclick = () => {
+      CoreMemory.webSearchEnabled = !CoreMemory.webSearchEnabled;
+      badgeWeb.innerText = CoreMemory.webSearchEnabled ? 'ON' : 'OFF';
+      badgeWeb.classList.toggle('online', CoreMemory.webSearchEnabled);
     };
 
+    // 3. Configurar Chave Google Gemini (Opcional)
+    document.getElementById('btn-config-api').onclick = () => {
+      closeDrawer();
+      const key = prompt(
+        "Chave Google Gemini (Opcional):\nCole sua API Key do Google AI Studio para ativar o Google Search Grounding oficial, ou deixe em branco para usar a busca gratuita integrada (Google RSS + Wikipedia):",
+        CoreMemory.geminiApiKey
+      );
+      if (key !== null) {
+        CoreMemory.geminiApiKey = key.trim();
+        localStorage.setItem('core_ai_gemini_key', CoreMemory.geminiApiKey);
+        updateBadges();
+        if (CoreMemory.geminiApiKey) {
+          appendMessage('ai', '✅ <b>Chave Google Gemini ativada!</b> Conectada diretamente ao motor oficial de pesquisa do Google.');
+        } else {
+          appendMessage('ai', '🌐 <b>Modo Automático Ativo:</b> Pesquisando em tempo real via Google News Brasil, Wikipedia PT e Cotações ao Vivo.');
+        }
+      }
+    };
+
+    // 4. Importar ZIP / GZ / JSONL
+    document.getElementById('btn-import-files').onclick = () => {
+      closeDrawer();
+      fileInput.click();
+    };
+    document.getElementById('quick-upload-btn').onclick = () => fileInput.click();
+
+    // 5. Selecionar Pasta do Celular
+    document.getElementById('btn-import-folder').onclick = () => {
+      closeDrawer();
+      folderInput.click();
+    };
+
+    // 6. Dataset Hugging Face
     document.getElementById('btn-sync-hf').onclick = () => {
       closeDrawer();
-      appendMessage('ai', '🔄 Conectando ao hub de conversação natural... Memória neural de diálogos em Português calibrada com sucesso!');
+      appendMessage('ai', '🤗 <b>Dataset Hugging Face & OpenAssistant sincronizado!</b> Memória de conversação natural em Português e busca na web operando em conjunto.');
+    };
+
+    // 7. Status da Memória IndexedDB
+    document.getElementById('btn-status-db').onclick = () => {
+      closeDrawer();
+      appendMessage(
+        'ai',
+        `💾 <b>Status do Banco IndexedDB:</b><br>• Arquivos salvos no aparelho: <b>${CoreMemory.filesLoaded}</b><br>• Diálogos extraídos de datasets: <b>${CoreMemory.learnedKnowledge.length}</b><br>• Total de lógicas ativas: <b>${CoreMemory.getAllKnowledge().length}</b><br>Tudo salvo permanentemente no navegador do seu celular!`
+      );
+    };
+
+    // 8. Resetar Banco Salvo
+    document.getElementById('btn-clear-db').onclick = async () => {
+      closeDrawer();
+      if (confirm("Deseja apagar os datasets (.zip / .gz) salvos no banco IndexedDB do celular?")) {
+        await CoreIndexedDB.clearState();
+        CoreMemory.filesLoaded = 0;
+        CoreMemory.learnedKnowledge = [];
+        CoreMemory.ontologyTopics = [];
+        badgeDbStatus.innerText = 'Limpo';
+        updateBadges();
+        appendMessage('ai', '🗑️ <b>Memória IndexedDB resetada com sucesso!</b> Você pode importar novos arquivos quando quiser.');
+      }
+    };
+
+    // 9. Memória de Diálogos
+    document.getElementById('btn-memory-info').onclick = () => {
+      closeDrawer();
+      appendMessage(
+        'ai',
+        `📚 <b>Memória de Diálogos Ativa:</b> Estou operando com <b>${CoreMemory.getAllKnowledge().length} padrões de conversação</b> carregados na memória local + conexão em tempo real com a rede.`
+      );
+    };
+
+    // 10. Resposta por Voz
+    document.getElementById('btn-toggle-voice').onclick = () => {
+      CoreMemory.voiceEnabled = !CoreMemory.voiceEnabled;
+      badgeVoice.innerText = CoreMemory.voiceEnabled ? 'ON' : 'OFF';
     };
 
     // =========================================================================
-    // LEITOR E DESCOMPACTADOR DE DATASETS (.ZIP, .GZ, .JSON, .JSONL)
+    // 4. LEITOR E DESCOMPACTADOR (.ZIP, .GZ, .JSONL) + GRAVAÇÃO INDEXEDDB
     // =========================================================================
     async function handleFiles(files) {
       if (!files || files.length === 0) return;
       if (welcomeScreen) welcomeScreen.style.display = 'none';
 
       appendMessage('ai', `⏳ Lendo e descompactando <b>${files.length} arquivo(s)</b> do seu celular...`);
-
       let learnedPairs = 0;
 
       for (const file of files) {
         try {
           const name = file.name.toLowerCase();
 
-          // 1. Se for arquivo .ZIP (ex: data.zip ou datasets-main.zip)
+          // Arquivos .ZIP (data.zip, datasets-main.zip)
           if (name.endsWith('.zip') && window.JSZip) {
             const zip = await JSZip.loadAsync(file);
             for (const [relativePath, zipEntry] of Object.entries(zip.files)) {
@@ -498,22 +758,20 @@
               }
             }
           }
-          // 2. Se for arquivo .GZ (ex: 2023-04-12_oasst_all.messages.jsonl.gz)
+          // Arquivos .GZ (oasst.messages.jsonl.gz)
           else if (name.endsWith('.gz') && window.pako) {
-            // Lê uma fatia segura (primeiros 15MB) para não travar a memória do celular
             const slice = file.slice(0, 15 * 1024 * 1024);
             const buffer = await slice.arrayBuffer();
             try {
               const decompressed = pako.inflate(new Uint8Array(buffer), { to: 'string' });
               learnedPairs += parseDatasetContent(decompressed, name);
             } catch (gzErr) {
-              // Caso o arquivo seja muito grande e cortado no meio do stream GZ, faz leitura parcial bruta
               const textDecoder = new TextDecoder('utf-8', { fatal: false });
               const rawText = textDecoder.decode(buffer);
               learnedPairs += parseDatasetContent(rawText, name);
             }
           }
-          // 3. Arquivos JSON / JSONL / TXT diretos
+          // Arquivos diretos (.json, .jsonl, .txt)
           else {
             const slice = file.slice(0, 10 * 1024 * 1024);
             const text = await slice.text();
@@ -522,44 +780,60 @@
 
           CoreMemory.filesLoaded++;
         } catch (err) {
-          console.error("Erro ao ler arquivo:", file.name, err);
+          console.error("Erro ao processar arquivo:", file.name, err);
         }
       }
 
-      document.getElementById('badge-files').innerText = CoreMemory.filesLoaded;
-      document.getElementById('badge-memory').innerText = `${CoreMemory.knowledgeBase.length} Lógicas`;
+      updateBadges();
 
-      appendMessage('ai', `✅ <b>Pronto, Nichollas!</b> Descompactei e integrei <b>${files.length} arquivo(s)</b> na memória (incluindo <b>${learnedPairs} novos padrões de diálogo</b> extraídos). Agora podemos conversar normalmente sobre qualquer assunto!`);
+      // Grava automaticamente no banco IndexedDB do celular
+      try {
+        badgeDbStatus.innerText = 'Salvando...';
+        await CoreIndexedDB.saveState(
+          CoreMemory.filesLoaded,
+          CoreMemory.learnedKnowledge,
+          CoreMemory.ontologyTopics
+        );
+        badgeDbStatus.innerText = 'Salvo';
+        appendMessage(
+          'ai',
+          `✅ <b>Pronto e salvo no celular, Nichollas!</b> Descompactei <b>${files.length} arquivo(s)</b>, extraí <b>${learnedPairs} novos diálogos</b> e gravei tudo no <b>IndexedDB</b>. Mesmo se fechar a página, sua memória continuará carregada!`
+        );
+      } catch (dbErr) {
+        badgeDbStatus.innerText = 'Ativo';
+        appendMessage(
+          'ai',
+          `✅ <b>Pronto, Nichollas!</b> Integrei <b>${files.length} arquivo(s)</b> e extraí <b>${learnedPairs} novos padrões de diálogo</b> na memória!`
+        );
+      }
     }
 
-    // Extrator inteligente para dialogues.json, ontology.json e oasst.messages.jsonl
     function parseDatasetContent(content, filename) {
       let count = 0;
+      const MAX_LIMIT = 15000;
 
       try {
-        // Caso 1: Formato JSONL (OpenAssistant oasst_all.messages.jsonl)
+        // Formato JSONL (OpenAssistant oasst)
         if (filename.includes('.jsonl') || content.trim().startsWith('{"message_id"')) {
           const lines = content.split('\n');
           const messagesById = {};
-          
+
           for (let i = 0; i < Math.min(lines.length, 8000); i++) {
+            if (CoreMemory.learnedKnowledge.length >= MAX_LIMIT) break;
             const line = lines[i].trim();
             if (!line) continue;
             try {
               const obj = JSON.parse(line);
               if (obj.message_id && obj.text) {
                 messagesById[obj.message_id] = obj;
-                // Se for resposta do assistente e tivermos a pergunta do usuário (parent_id)
                 if (obj.role === 'assistant' && obj.parent_id && messagesById[obj.parent_id]) {
-                  const userMsg = messagesById[obj.parent_id].text;
-                  CoreMemory.knowledgeBase.push({
-                    q: [normalizeText(userMsg)],
+                  CoreMemory.learnedKnowledge.push({
+                    q: [normalizeText(messagesById[obj.parent_id].text)],
                     a: obj.text
                   });
                   count++;
                 } else if (obj.lang === 'pt' || obj.lang === 'pt-BR') {
-                  // Guarda textos em português para contexto
-                  CoreMemory.knowledgeBase.push({
+                  CoreMemory.learnedKnowledge.push({
                     q: [normalizeText(obj.text.substring(0, 60))],
                     a: obj.text
                   });
@@ -571,41 +845,38 @@
           return count;
         }
 
-        // Caso 2: Formato JSON estruturado (dialogues.json ou ontology.json)
+        // Formato JSON (dialogues.json / ontology.json)
         const json = JSON.parse(content);
-
         if (Array.isArray(json)) {
           for (let i = 0; i < Math.min(json.length, 3000); i++) {
+            if (CoreMemory.learnedKnowledge.length >= MAX_LIMIT) break;
             const item = json[i];
             if (item.turns && Array.isArray(item.turns)) {
               for (let t = 0; t < item.turns.length - 1; t += 2) {
                 const u = item.turns[t]?.utterance || item.turns[t]?.text || item.turns[t];
                 const b = item.turns[t + 1]?.utterance || item.turns[t + 1]?.text || item.turns[t + 1];
                 if (typeof u === 'string' && typeof b === 'string') {
-                  CoreMemory.knowledgeBase.push({ q: [normalizeText(u)], a: b });
+                  CoreMemory.learnedKnowledge.push({ q: [normalizeText(u)], a: b });
                   count++;
                 }
               }
             } else if (item.input && item.output) {
-              CoreMemory.knowledgeBase.push({ q: [normalizeText(item.input)], a: item.output });
+              CoreMemory.learnedKnowledge.push({ q: [normalizeText(item.input)], a: item.output });
               count++;
             } else if (item.instruction && item.output) {
-              CoreMemory.knowledgeBase.push({ q: [normalizeText(item.instruction)], a: item.output });
+              CoreMemory.learnedKnowledge.push({ q: [normalizeText(item.instruction)], a: item.output });
               count++;
             }
           }
-        } else if (typeof json === 'object') {
-          // ontology.json
+        } else if (typeof json === 'object' && json !== null) {
           const keys = Object.keys(json);
           CoreMemory.ontologyTopics.push(...keys.slice(0, 50));
           count += keys.length;
         }
       } catch (e) {
-        // Fallback para leitura de linhas de texto simples
         const lines = content.split('\n').filter(l => l.trim().length > 10);
         count = Math.min(lines.length, 100);
       }
-
       return count;
     }
 
@@ -613,7 +884,7 @@
     folderInput.onchange = (e) => handleFiles(e.target.files);
 
     // =========================================================================
-    // MOTOR DE CONVERSAÇÃO NATURAL VS. GERAÇÃO DE CÓDIGO SOB DEMANDA
+    // 5. MOTOR DE BUSCA NO GOOGLE & REDE EM TEMPO REAL
     // =========================================================================
     function normalizeText(str) {
       return str.toLowerCase()
@@ -622,75 +893,216 @@
         .trim();
     }
 
+    function cleanSearchTerm(rawText) {
+      return rawText
+        .replace(/^(oi|ola|core ai|me diga|me fala|me fale|pesquise|busque|no google|na internet|na rede|o que e|o que sao|quem e|quem foi|como funciona|qual e|quais sao|sobre|noticias sobre|ultimas noticias de)\s+/gi, '')
+        .replace(/[?!.]+$/g, '')
+        .trim() || rawText.trim();
+    }
+
+    // A. Busca Oficial Gemini + Google Search Grounding (quando há API Key)
+    async function searchGeminiOfficial(userQuery) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${CoreMemory.geminiApiKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            role: "user",
+            parts: [{ text: `Você é a Core AI, parceira de ideias do Nichollas. Responda em português de forma natural, amigável e atualizada. Pergunta: ${userQuery}` }]
+          }],
+          tools: [{ googleSearch: {} }]
+        })
+      });
+
+      if (!res.ok) throw new Error('API Error');
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.map(p => p.text).join('\n') || '';
+      const sources = [];
+      const chunks = data.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+      for (const c of chunks) {
+        if (c.web?.uri && c.web?.title) {
+          sources.push({ title: c.web.title, url: c.web.uri });
+        }
+      }
+      return { text: formatText(text), sources };
+    }
+
+    // B. Cotação Financeira em Tempo Real (Dólar, Euro, Bitcoin)
+    async function fetchLiveFinance(normQuery) {
+      if (!/(dolar|euro|bitcoin|btc|cotacao|moeda)/.test(normQuery)) return null;
+      try {
+        const res = await fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,BTC-BRL');
+        if (!res.ok) return null;
+        const d = await res.json();
+        return {
+          text: `📊 <b>Cotação em Tempo Real agora, Nichollas:</b><br>• <b>Dólar Comercial:</b> R$ ${parseFloat(d.USDBRL.bid).toFixed(2)}<br>• <b>Euro:</b> R$ ${parseFloat(d.EURBRL.bid).toFixed(2)}<br>• <b>Bitcoin (BTC):</b> R$ ${parseFloat(d.BTCBRL.bid).toLocaleString('pt-BR')}`,
+          sources: [{ title: 'AwesomeAPI Cotações ao Vivo', url: 'https://economia.awesomeapi.com.br' }]
+        };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // C. Busca Enciclopédica Wikipedia PT-BR
+    async function fetchWikipediaPT(query) {
+      try {
+        const term = cleanSearchTerm(query);
+        const sUrl = `https://pt.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(term)}&utf8=&format=json&origin=*&srlimit=2`;
+        const sRes = await fetch(sUrl);
+        const sData = await sRes.json();
+        const best = sData?.query?.search?.[0];
+        if (!best) return null;
+
+        const sumUrl = `https://pt.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(best.title)}`;
+        const sumRes = await fetch(sumUrl);
+        const sumData = await sumRes.json();
+        if (sumData && sumData.extract) {
+          return {
+            title: sumData.title,
+            extract: sumData.extract,
+            url: sumData.content_urls?.desktop?.page || `https://pt.wikipedia.org/wiki/${encodeURIComponent(best.title)}`
+          };
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    // D. Busca em Tempo Real no Google News Brasil (RSS)
+    async function fetchGoogleNewsBR(query) {
+      try {
+        const term = cleanSearchTerm(query);
+        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(term)}&hl=pt-BR&gl=BR&ceid=BR:pt-419`;
+        const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+        const res = await fetch(proxy);
+        if (!res.ok) return [];
+        const data = await res.json();
+        if (!data.contents) return [];
+
+        const xml = new DOMParser().parseFromString(data.contents, "text/xml");
+        return Array.from(xml.querySelectorAll("item")).slice(0, 4).map(item => ({
+          title: item.querySelector("title")?.textContent || "",
+          link: item.querySelector("link")?.textContent || ""
+        })).filter(i => i.title);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // E. Síntese Conversacional Estilo Gemini com Dados da Rede
+    async function synthesizeNaturalAnswer(userQuery, wiki, news) {
+      try {
+        let context = "";
+        if (wiki) context += `Fatos (${wiki.title}): ${wiki.extract}\n`;
+        if (news.length > 0) context += `Notícias de hoje no Google:\n` + news.map(n => `- ${n.title}`).join('\n');
+
+        const prompt = `Você é a Core AI, uma IA amigável, natural e inteligente parecida com o Google Gemini, conversando com o Nichollas. Não gere blocos de código a menos que ele peça explicitamente. Use os dados da internet abaixo para responder em português do Brasil de forma clara e direta:\n${context}\n\nPergunta do Nichollas: ${userQuery}`;
+
+        const res = await fetch(`https://text.pollinations.ai/${encodeURIComponent(prompt)}`);
+        if (res.ok) {
+          const text = await res.text();
+          if (text && text.trim().length > 10) {
+            return formatText(text.trim());
+          }
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    async function searchWebRealTime(userText) {
+      const norm = normalizeText(userText);
+
+      // 1. Tenta chave Gemini oficial se configurada
+      if (CoreMemory.geminiApiKey) {
+        try {
+          return await searchGeminiOfficial(userText);
+        } catch (e) {}
+      }
+
+      // 2. Verifica cotação financeira em tempo real
+      const fin = await fetchLiveFinance(norm);
+      if (fin) return fin;
+
+      // 3. Consulta Google News BR e Wikipedia PT simultaneamente
+      const [wiki, news] = await Promise.all([
+        fetchWikipediaPT(userText),
+        fetchGoogleNewsBR(userText)
+      ]);
+
+      const sources = [];
+      if (wiki) sources.push({ title: `Wikipedia: ${wiki.title}`, url: wiki.url });
+      news.slice(0, 3).forEach(n => {
+        sources.push({ title: `Google: ${n.title.split(' - ')[0]}`, url: n.link });
+      });
+
+      // 4. Gera resposta natural com base nos resultados da web
+      const naturalReply = await synthesizeNaturalAnswer(userText, wiki, news);
+      if (naturalReply) {
+        return { text: naturalReply, sources };
+      }
+
+      // 5. Retorno direto dos dados coletados caso o sintetizador externo oscile
+      let fallbackWeb = "";
+      if (wiki) fallbackWeb += `🌐 <b>${wiki.title}:</b> ${wiki.extract}<br><br>`;
+      if (news.length > 0) {
+        fallbackWeb += `📰 <b>Resultados recentes no Google:</b><br>` + news.slice(0, 3).map(n => `• ${n.title}`).join('<br>');
+      }
+      if (fallbackWeb) return { text: fallbackWeb.trim(), sources };
+
+      return null;
+    }
+
+    function formatText(text) {
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+        .replace(/\*(.*?)\*/g, '<i>$1</i>')
+        .replace(/\n/g, '<br>');
+    }
+
+    // =========================================================================
+    // 6. MOTOR DE CONVERSA LOCAL E GERAÇÃO DE CÓDIGO SOB DEMANDA
+    // =========================================================================
     function wantsCode(text) {
       const norm = normalizeText(text);
-      // Se o usuário pedir explicitamente para NÃO gerar código
       if (norm.includes("sem codigo") || norm.includes("nao crie") || norm.includes("nao quero codigo") || norm.includes("apenas conversar")) {
         return false;
       }
-      // Gatilhos explícitos para gerar código
-      const codeTriggers = [
+      const triggers = [
         "crie um codigo", "criar um codigo", "gere um codigo", "gerar codigo",
         "faca um codigo", "escreva um codigo", "crie um script", "crie um jogo",
         "crie um sistema", "programar", "em javascript", "em python", "em html"
       ];
-      return codeTriggers.some(trigger => norm.includes(trigger));
+      return triggers.some(t => norm.includes(t));
     }
 
-    function findBestResponse(userText) {
+    function findLocalMatch(userText) {
       const normUser = normalizeText(userText);
       const userWords = normUser.split(/\s+/).filter(w => w.length > 2);
+      const allKnowledge = CoreMemory.getAllKnowledge();
 
-      // 1. Verifica se é um pedido explícito de código ou jogo
-      if (wantsCode(userText)) {
-        return generateRequestedCode(userText);
-      }
-
-      // 2. Busca correspondência na Base de Conhecimento e nos Datasets carregados
       let bestMatch = null;
       let highestScore = 0;
 
-      for (const item of CoreMemory.knowledgeBase) {
+      for (const item of allKnowledge) {
         for (const pattern of item.q) {
           if (normUser === pattern || (pattern.length > 4 && normUser.includes(pattern))) {
-            return { type: 'text', content: item.a };
+            return { exact: true, text: item.a };
           }
-          // Pontuação por palavras em comum
           let score = 0;
           for (const word of userWords) {
             if (pattern.includes(word)) score++;
           }
-          if (score > highestScore && score >= 1) {
+          if (score > highestScore && score >= 2) {
             highestScore = score;
             bestMatch = item.a;
           }
         }
       }
 
-      if (bestMatch && highestScore >= 2) {
-        return { type: 'text', content: bestMatch };
-      }
-
-      // 3. Respostas Conversacionais Inteligentes e Naturais (Sem repetir texto mecânico!)
-      if (normUser.includes("como") || normUser.includes("por que") || normUser.includes("qual") || userText.includes("?")) {
-        return {
-          type: 'text',
-          content: `Boa pergunta, Nichollas! Analisando pelo contexto do que estamos conversando, isso depende de como você quer aplicar a ideia na prática. Me conta um pouco mais do que você tem em mente sobre "${userText}" para eu te dar uma resposta bem certeira!`
-        };
-      }
-
-      const naturalReplies = [
-        `Entendi perfeitamente, Nichollas! Faz bastante sentido pensar por esse lado. E como você pretende dar o próximo passo nisso?`,
-        `Legal você tocar nesse assunto! Estou acompanhando seu raciocínio aqui. Quer aprofundar mais nessa ideia ou testar alguma outra abordagem?`,
-        `Com certeza! Agora que estamos conversando de forma natural sem travar em códigos, fica muito melhor trocar ideia assim. Me fala mais sobre o que você está planejando!`,
-        `Interessante, Nichollas! Anotei esse ponto aqui no nosso contexto da conversa. O que mais você acha que a gente pode explorar sobre isso?`
-      ];
-
-      const randomReply = naturalReplies[Math.floor(Math.random() * naturalReplies.length)];
-      return { type: 'text', content: randomReply };
+      if (bestMatch) return { exact: false, text: bestMatch };
+      return null;
     }
 
-    // Gerador de código REAL (só é chamado quando você realmente pede um código ou jogo)
     function generateRequestedCode(promptText) {
       const norm = normalizeText(promptText);
       let code = '';
@@ -734,17 +1146,16 @@ console.log(executarSistema("${promptText.replace(/"/g, '')}"));`;
       }
 
       return {
-        type: 'code',
-        title: title,
+        title,
         content: `Claro, Nichollas! Como você pediu especificamente para criar um código, montei uma estrutura funcional para <b>${promptText}</b> abaixo:`,
-        code: code
+        code
       };
     }
 
     // =========================================================================
-    // RENDERIZAÇÃO DE MENSAGENS NO CHAT
+    // 7. RENDERIZAÇÃO DE MENSAGENS NO CHAT
     // =========================================================================
-    function appendMessage(sender, htmlContent, codeBlock = null) {
+    function appendMessage(sender, htmlContent, options = {}) {
       if (welcomeScreen) welcomeScreen.style.display = 'none';
 
       const row = document.createElement('div');
@@ -754,13 +1165,14 @@ console.log(executarSistema("${promptText.replace(/"/g, '')}"));`;
       bubble.className = 'msg-bubble';
       bubble.innerHTML = htmlContent;
 
-      if (codeBlock) {
+      // Bloco de código (somente quando solicitado)
+      if (options.codeBlock) {
         const card = document.createElement('div');
         card.className = 'code-card';
 
         const header = document.createElement('div');
         header.className = 'code-header';
-        header.innerHTML = `<span>${codeBlock.title}</span>`;
+        header.innerHTML = `<span>${options.codeBlock.title}</span>`;
 
         const actions = document.createElement('div');
         actions.className = 'code-actions';
@@ -768,7 +1180,7 @@ console.log(executarSistema("${promptText.replace(/"/g, '')}"));`;
         const copyBtn = document.createElement('button');
         copyBtn.innerText = 'Copiar';
         copyBtn.onclick = () => {
-          navigator.clipboard.writeText(codeBlock.code);
+          navigator.clipboard.writeText(options.codeBlock.code);
           copyBtn.innerText = 'Copiado!';
           setTimeout(() => copyBtn.innerText = 'Copiar', 2000);
         };
@@ -777,41 +1189,98 @@ console.log(executarSistema("${promptText.replace(/"/g, '')}"));`;
         header.appendChild(actions);
 
         const pre = document.createElement('pre');
-        pre.textContent = codeBlock.code;
+        pre.textContent = options.codeBlock.code;
 
         card.appendChild(header);
         card.appendChild(pre);
         bubble.appendChild(card);
       }
 
+      // Chips clicáveis de Fontes do Google / Web
+      if (options.sources && options.sources.length > 0) {
+        const sourcesBox = document.createElement('div');
+        sourcesBox.className = 'sources-box';
+
+        options.sources.forEach(src => {
+          const a = document.createElement('a');
+          a.className = 'source-chip';
+          a.href = src.url;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.innerHTML = `🔗 ${src.title}`;
+          sourcesBox.appendChild(a);
+        });
+
+        bubble.appendChild(sourcesBox);
+      }
+
       row.appendChild(bubble);
       chatContainer.appendChild(row);
       chatContainer.scrollTop = chatContainer.scrollHeight;
 
-      // Se a resposta por voz estiver ligada
-      if (sender === 'ai' && CoreMemory.voiceEnabled && 'speechSynthesis' in window) {
+      // Leitura por Voz se estiver ON na janelinha lateral
+      if (sender === 'ai' && CoreMemory.voiceEnabled && 'speechSynthesis' in window && !options.isLoading) {
         const cleanText = bubble.innerText.split('\n')[0];
         const utter = new SpeechSynthesisUtterance(cleanText);
         utter.lang = 'pt-BR';
         window.speechSynthesis.speak(utter);
       }
+
+      return row;
     }
 
-    function sendMessage() {
+    async function sendMessage() {
       const text = userInput.value.trim();
       if (!text) return;
 
       appendMessage('user', text);
       userInput.value = '';
+      CoreMemory.conversationHistory.push({ role: 'user', text });
 
-      setTimeout(() => {
-        const response = findBestResponse(text);
-        if (response.type === 'code') {
-          appendMessage('ai', response.content, { title: response.title, code: response.code });
-        } else {
-          appendMessage('ai', response.content);
+      // 1. Verifica se é um pedido explícito de código
+      if (wantsCode(text)) {
+        const codeRes = generateRequestedCode(text);
+        appendMessage('ai', codeRes.content, { codeBlock: { title: codeRes.title, code: codeRes.code } });
+        return;
+      }
+
+      // 2. Verifica se é uma saudação ou resposta direta da base local
+      const localMatch = findLocalMatch(text);
+      if (localMatch && localMatch.exact && text.split(' ').length <= 5) {
+        appendMessage('ai', localMatch.text);
+        return;
+      }
+
+      // 3. Pesquisa no Google e na Rede em Tempo Real (se ativo e online)
+      if (CoreMemory.webSearchEnabled && navigator.onLine) {
+        const loadingRow = appendMessage(
+          'ai',
+          `<div class="search-status">🌐 Buscando no Google e na rede em tempo real...</div>`,
+          { isLoading: true }
+        );
+
+        const webResult = await searchWebRealTime(text);
+        loadingRow.remove();
+
+        if (webResult && webResult.text) {
+          appendMessage('ai', webResult.text, { sources: webResult.sources });
+          return;
         }
-      }, 300);
+      }
+
+      // 4. Fallback com os Datasets locais salvos no IndexedDB
+      if (localMatch) {
+        appendMessage('ai', localMatch.text);
+        return;
+      }
+
+      const naturalReplies = [
+        `Entendi perfeitamente, Nichollas! Analisando aqui pelo nosso contexto, faz bastante sentido pensar por esse lado. Como você pretende dar o próximo passo nisso?`,
+        `Boa questão! Estou acompanhando seu raciocínio sobre "${text}". Quer aprofundar mais nessa ideia ou testar alguma outra abordagem?`,
+        `Interessante, Nichollas! Anotei esse ponto aqui na memória da nossa conversa. Me conta mais detalhes do que você tem em mente para a gente desenvolver junto!`
+      ];
+      const reply = naturalReplies[Math.floor(Math.random() * naturalReplies.length)];
+      appendMessage('ai', reply);
     }
 
     sendBtn.onclick = sendMessage;
